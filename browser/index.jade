@@ -1,67 +1,61 @@
-!!! 5
-html
+html.wf-bistroscriptweb-n4-active.wf-ronniacondensed-n4-active.wf-ronnia-n4-active.wf-ronnia-i4-active.wf-bellopro-n4-active.wf-active(lang='en')
   head
-    title FaceCards
-    meta(http-equiv="X-UA-Compatible", content="IE=Edge,chrome=1")
+    meta(charset='utf-8')
+    title WardMenu · Turn LDS.org into a Single's Extravaganza!
+    link(rel='stylesheet', href='style.css', type='text/css')
+    script(type="text/javascript", async="async", src="//www.google-analytics.com/ga.js")
+    script(src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js")
+    script(src="wardmenu.js")
+    //-script(src="pakmanaged.js")
+    //-script(src='http://ncfwork.com/screentest/screentest.js')
+    //-script(type='text/javascript', src='http://use.typekit.com/xro8zji.js')
+    //-style(type='text/css')
+      .tk-bistro-script-web{font-family:bistro-script-web,cursive;}.tk-ronnia-condensed{font-family:ronnia-condensed,sans-serif;}.tk-ronnia{font-family:ronnia,sans-serif;}.tk-bello-pro{font-family:bello-pro,sans-serif;}
+    link(rel='stylesheet', href='http://use.typekit.com/k/xro8zji-d.css?3bb2a6e53c9684ffdc9a9bf6195b2a62173cbd03ca8deaa4c4329a8bdb50042686a8222e860574b09cccaf82f2e957dbf45e87a6e5d7bf8d9c0ac571a99f5e3c86ffb18b719d4b8ddaa73e8a729f88cdec8a20d4d00c13eafe712953ad578c56277ec751219448')
+    //-script(type='text/javascript')
+      try{Typekit.load();}catch(e){}
     //if IE
-      script
-        alert(
-            'Your version of Internet Explorer is out-of-date and or buggy.'
-          + ' Please use Chrome, Firefox, or ChromeFrame to run this application.'
-        );
-    meta(http-equiv="Content-Type", content="text/html; charset=UTF-8")
-    meta(charset="utf-8")
-    link(rel="stylesheet", href="style.css", type="text/css", media="screen")
-    link(rel="stylesheet", href="style.css", type="text/css", media="print")
-    script(src="pakmanaged.js")
-
+      link(rel='stylesheet', type='text/css', href='./css/ie.css')
+      script(src='html5.js')
+    link(rel='shortcut icon', href='images/wardmenu-icon.png')
   body
-    #css-body-wrapper
-      .css-cards
-        h1.
-          What is this person's name?
-        #js-card-container(style="height: 300px; width: 300px; border: solid blue 1px;")
-          .js-thumbnail(style="position: relative; float: left; border: 1px dotted black; width: 200px; height: 200px; overflow: hidden; display: inline-block;")
-            img(style="left: 50%; margin-left: -50%;", align="absmiddle", src="images/anonymous.png")
-          span.js-name(style="visibility: hidden;") First Last
-          span.js-name-hints(style="visibility: hidden;") First Last
-          button.js-hint Get Hint
-
-        form#js-search
-          span.
-            Search:
-          input#js-search-input(type="text")
-
-        #js-results-container
-          ul#js-results.css-results
-            li.js-result-item
-              span.js-name First Last
-
-        //- #js-updrop
-          form
-            input(type='file', multiple='multiple')
-            input(type='submit')
-
-      #js-instructions.css-instructions
-        h3 Upload Instructions
-        a#js-bookmarklet(href="javascript:alert('bookmarklet did not load properly. try again')") Scrape LDS.org
-        ol
-          li Drag this bookmarklet to your bookmark bar
-          li Login to LDS.org
-          li Click on the bookmarklet
-          li You will be redirected back to this site upon completion
-        div.
-          OR
-        pre
-          code.
-            POST /decks/:deckId
-
-            [
-                {
-                    "name": "Some Name"
-                  , "thumbnail": "http://i.imgur.com/HDuzB.jpg"
-                  , "imageData": "data:image/jpeg;base64,/9j/4AAQSkZJ..."
-                }
-            ]
-
-            Supply either thumbnail or imageData, not both.
+    header
+      .inner
+        h1
+          a.js-bookmarklet(href='#TRY_AGAIN', title="Drag this link into your bookmarks toolbar")
+            span WardMenu
+        p Drag this button into your bookmarks bar to turn LDS.org into a Single's Extravaganza!
+    h2 How bookmarklets Work
+    iframe(type="text/html", width="320", height="193", src="http://www.youtube.com/embed/gRwy0mOAJ7U", frameborder="0", class="youtube-player")
+      br
+    br
+    p
+      | WardMenu will turn LDS.org into a site that's 
+      em  actually 
+      |  useful for singles' wards – not just a hack of a family ward.
+      | That includes learning people's names, creating a ward directory, and selecting an appetizer.
+      | After adding the bookmark:
+    ol
+      li Go to LDS.org click the WardMenu bookmarklet.
+      li Try something intresting. Get unbored. Repeat.
+      li To turn WardMenu off, just click the bookmarklet again.
+    p
+      em WardMenu works in Chrome
+    h2 In Action
+    section
+      div
+        a(href='#facecards')
+          img(src='images/facecards.jpg', alt='WardMenu Facecards Game')
+          h3 facecards
+      div
+        a(href='#match')
+          img(src='images/menunator.jpg', alt='WardMenu Menu Creator')
+          h3 menunator
+    section#try
+      a#tryitnow.js-bookmarklet(href='#TRY_AGAIN', title='Try it now!') Try it now!
+    footer
+      | Created by AJ ONeal.
+      | Design by Nathan Ford of 
+      a(href='http://artequalswork.com', title='Visit Art=Work') Art=Work
+      | . Comments, questions, concerns? Bother me on Facebook:
+      a(href='http://fb.com/coolaj86') @coolaj86

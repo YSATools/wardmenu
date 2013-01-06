@@ -1,12 +1,308 @@
-#css-body-wrapper {
-}
-.css-hidden {
-  display: none;
+@import "less/prefixer";
+@import "less/reset";
+
+/* Fount CSS by Nathan C. Ford. Modified for WardMenu by AJ ONeal */
+
+abbr[title] { 
+	azimuthborder-bottom : 1px dotted; 
+	cursor : help; 
 }
 
-.css-cards {
-  float: left;
+body {
+	text-align: center;
+	margin: 0;
+	background: #d6d6d6;
+	font-size: 62.5%;
+	font-family: ronnia, "Trebuchet MS", trebuchet, sans-serif;
+	font-style: normal;
+	font-weight: 400;
+	text-shadow: 0 1px 0 #f0f0f0;
+	color: #868686;
 }
-.css-instructions {
-  float: left;
+
+header {
+	display: block;
+	overflow: hidden;
+}
+	
+header .inner {
+	background: #026b96;
+	width: 150%;
+	padding: 4em 0 6em;
+	position: relative;
+	left: -26%;
+	-moz-border-radius-bottomleft: 50%;
+	-moz-border-radius-bottomright: 50%;
+	-webkit-border-bottom-left-radius: 50%;
+	-webkit-border-bottom-right-radius: 50%;
+	border-bottom-left-radius: 50%;
+	border-bottom-right-radius: 50%;
+}
+
+header h1 {
+	max-width: 300px;
+	width: 50%;
+	margin: 0 auto;
+	border: 3px solid #fff;
+	-moz-border-radius: 18px; -webkit-border-radius: 18px;
+	border-radius: 18px;
+	margin: 2em auto 2em;
+}
+
+header h1 a {
+	-moz-border-radius: 15px; -webkit-border-radius: 15px;
+	border-radius: 15px;
+	background: #015578;
+	background-image: -webkit-gradient(
+	    linear,
+	    left bottom,
+	    left top,
+	    color-stop(0.08, rgb(2,92,125)),
+	    color-stop(0.64, rgb(1,75,107))
+	);
+	background-image: -moz-linear-gradient(
+	    center bottom,
+	    rgb(2,92,125) 8%,
+	    rgb(1,75,107) 64%
+	);
+	box-shadow: 0 8px 0 rgba(0, 0, 0, 0.5), 0 20px 20px rgba(0, 0, 0, 0.2), 0 -90px 403px rgba(255, 255, 255, 0.2);
+	-moz-box-shadow: 0 8px 0 rgba(0, 0, 0, 0.5), 0 20px 20px rgba(0, 0, 0, 0.2), 0 -90px 273px rgba(255, 255, 255, 0.6);
+	position: relative;
+	border: 1px solid rgba(255,255,255,0.15);
+	border-top-color: #378bb2;
+	border-bottom-color: rgba(255,255,255,0.15);
+	border-top-width: 1px;
+	border-bottom-width: 2px;
+	z-index: 1;
+	display: block;
+	text-decoration: none;
+	position: relative;
+	padding: 15px 0;
+	top: -8px;
+}
+
+header h1 a:hover {
+	top: 0;
+	box-shadow: 0 -90px 403px rgba(255, 255, 255, 0.2);
+	-moz-box-shadow: 0 -90px 273px rgba(255, 255, 255, 0.6);
+	border-color: #092F3F;
+}
+
+header h1 a:active {
+	background: #fff;
+}
+
+header h1 a:active span {
+	color: #e6e6e6;
+}
+
+header h1 span {
+	color: #fff;
+	font-family: bello-pro, cursive;
+	line-height: 66px;
+	font-size: 55px;
+	position: relative;
+	text-shadow: 0 1px 0 #ff5555;
+	-moz-transform: skew(0, -5deg);
+	-webkit-transform: skew(0, -5deg);
+	letter-spacing: normal;
+	text-shadow: 0 4px 0 rgba(0,0,0,0.5);
+	display: block;
+	left: -4px;
+	top: -3px;
+}
+
+header h1:first-letter {
+	font-size: 120%;
+	line-height: 120%;
+	margin-right: -10px;
+}
+
+header p {
+	text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+	color: #fff;
+	position: relative;
+	z-index: 0;
+	width: 60%;
+	font-size: 1.8em;
+}
+
+p {
+	display: block;
+	margin: 0 auto;
+	line-height: 1.5em;
+	font-size: 1.6em;
+	text-align: center;
+	padding: 0 1.3%;
+	-moz-box-sizing: padding-box; -webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	min-width: 340px;
+	max-width: 783px;
+	padding: 0 1%;
+}
+
+em {
+	font-style: italic;
+}
+
+h2, h3, #try {
+	font-family: ronnia-condensed, "Trebuchet MS", trebuchet, sans-serif;
+}
+
+h2 {
+	color: #555;
+	font-size: 2.3em;
+	font-weight: 400;
+	letter-spacing: 0.05em;
+	line-height: 1em;
+	margin: 2em auto 1em;
+	max-width: 783px;
+	min-width: 340px;
+	padding: 0;
+	text-transform: uppercase;
+}
+
+ul, ol {
+	display: block;
+	margin: 2em auto;
+	line-height: 1.5em;
+	font-size: 1.6em;
+	list-style: decimal outside;
+	padding: 0;
+	text-align: left;
+	width: 80%;
+	max-width: 355px;
+}
+
+li {
+	margin-bottom: 1em;
+}
+
+a {
+	color: rgb(3, 107, 150);
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+a:hover img {
+	border-color: rgb(23, 40, 46);
+}
+
+section {
+	margin: 1.5em auto 1em;
+	display: block;
+	overflow: hidden;
+	min-width: 340px;
+	max-width: 783px;
+}
+
+div {
+	background: rgba(3, 107, 150, 0.35);
+	-moz-border-radius: 8px; -webkit-border-radius: 8px;
+    border-radius: 8px;
+    border-top: 1px solid rgba(3, 107, 150, 0.35);
+    display: inline-block;
+    margin: 0 1% 1em;
+    padding: 2% 2% 0;
+    width: 43%;
+    min-width: 320px;
+    -moz-box-shadow: 0 1px 0 #e6e6e6;  -webkit-box-shadow: 0 1px 0 #e6e6e6;
+    box-shadow: 0 1px 0 #e6e6e6;
+}
+
+div a {
+	text-decoration: none;
+}
+
+h3 {
+	font-weight: 400;
+	line-height: 1em;
+	margin: 0.7em 0 0.7em;
+	text-transform: uppercase;
+	letter-spacing: 0.2em;
+	font-size: 1.4em;
+	color: #fff;
+	text-shadow: 0 1px 0 rgb(3, 107, 150);
+}
+
+img {
+	border: 1px solid #fff;
+	position: relative;
+	max-width: 99%;
+	left: -0.05em;
+	-moz-box-shadow: 0 1px 7px rgba(23, 40, 46, 0.7); -webkit-box-shadow: 0 1px 7px rgba(23, 40, 46, 0.7);
+	box-shadow: 0 1px 7px rgba(23, 40, 46, 0.7);
+}
+
+#try {
+	background: #ccc;
+	line-height: 1.5em;
+	font-size: 1.6em;
+	-moz-border-radius: 8px; -webkit-border-radius: 8px;
+	border-radius: 8px;
+	padding: 2em 0;
+	max-width: 755px;
+	border-top: 1px solid #bbb;
+	-moz-box-shadow: 0 1px 0 #e6e6e6;  -webkit-box-shadow: 0 1px 0 #e6e6e6;
+	box-shadow: 0 1px 0 #e6e6e6;
+}
+
+#tryitnow {
+	background: none repeat scroll 0 0 #D0D0D0;
+    border: 1px solid #bbb;
+    border-top-color: #aaa;
+	-moz-border-radius: 10px; -webkit-border-radius: 10px;
+	border-radius: 10px;
+    -moz-box-shadow: 0 1px 0 #e6e6e6;  -webkit-box-shadow: 0 1px 0 #e6e6e6;
+    box-shadow: 0 1px 0 #e6e6e6;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.09, rgb(221,221,221)),
+        color-stop(1, rgb(230,230,230))
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        rgb(221,221,221) 9%,
+        rgb(230,230,230) 100%
+    );
+    color: #026B96;
+    display: block;
+    letter-spacing: 0.05em;
+    margin: 0 auto;
+    padding: 20px;
+    text-decoration: none;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 #f0f0f0;
+    width: 300px;
+}
+
+#tryitnow:hover {
+	background: #fff;
+}
+
+footer {
+	display: block;
+	padding: 5em 0 3em;
+	color: #888;
+	font-size: 1.5em;
+}
+
+footer a {
+	text-decoration: none;
+}
+
+footer a:hover {
+	text-decoration: underline;
+}
+
+@media only screen and (max-width: 435px) {
+	
+	header h1 span:before, header h1 span:after {
+		display: none;
+	}
+	
 }
