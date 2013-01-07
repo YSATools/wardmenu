@@ -1,23 +1,25 @@
-.ccs-wardmenu-widget
+.css-wardmenu-widget
   .css-facecards-container
-    h1.
-      What is this person's name?
-    #js-card-container.css-card-container
-      .js-thumbnail.css-fc-poloroid
-        img(align="absmiddle", src="images/anonymous.png")
-      span.js-name(style="visibility: hidden;") First Last
-      span.js-name-hints(style="visibility: hidden;") First Last
-      button.js-hint Get Hint
+    .css-query-container
+      h1.
+        What is this person's name?
+      #js-card-container.css-card-container
+        .js-thumbnail.css-fc-poloroid
+          img(align="absmiddle", src="images/nophoto_medium.gif")
+          div.css-fc-hintname &nbsp;
+        span.js-name(style="display: none;") First Last
+        span.js-name-hints(style="display: none;") First Last
 
-    form#js-search
-      span.
-        Search:
-      input#js-search-input(type="text")
+      form#js-search
+        input#js-search-input(type="text", placeholder="Ex: John Doe")
+        button(type='submit') Check
+        button(type='button').js-hint Get Hint
 
-    #js-results-container
+    #js-results-container.css-results-container
       ul#js-results.css-results
         li.js-result-item
           span.js-name First Last
     
   .css-menunator-container
   .css-appetizer-container
+  .css-wm-mask
