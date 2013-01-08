@@ -7,7 +7,12 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
   "use strict";
 
   var $ = jQuery
-    , domReady = $
+    , domReady = function (fn) {
+        // don't allow jQuery to swallow all the stack traces!!!
+        $(function () {
+          setTimeout(fn, 0);
+        });
+      }
     //, _ = require('underscore')
     , location = require('location')
     , LdsOrg = require('./ldsorg')
@@ -375,7 +380,10 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
   }
 
   function updateCounter() {
-    $('#js-counter').text(1 + (Number($('#js-counter').text()) || 0));
+    $('#js-member-counter').text(1 + (Number($('#js-member-counter').text()) || 0));
+  }
+  function updateMemberTotal() {
+    $('#js-member-total').text(1 + (Number($('#js-member-total').text()) || 0));
   }
 
   function initLdsOrg() {
@@ -384,7 +392,8 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 
     ldsOrg = LdsOrg.create();
     ldsOrg.init({
-      profile: updateCounter
+        profile: updateCounter
+      , fullMemberList: updateMemberTotal
     });
 
     ldsOrg.getCurrentWardProfiles(function (profiles) {
@@ -410,8 +419,13 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       */
 
       cards = profiles.map(function (p) {
+        var names = p.headOfHousehold.name.split(',')
+          , last = names.shift().trim()
+          , name = names.join(', ').trim() + ' ' + last
+          ;
+
         return {
-            name: p.headOfHousehold.name
+            name: name
           , thumbnail: p.householdInfo.photoUrl || p.headOfHousehold.photoUrl
               //p.photoUrl
           // TODO gender

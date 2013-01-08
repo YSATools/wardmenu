@@ -10,6 +10,10 @@ var cache
 (function () {
   "use strict";
   
+  var $ = jQuery
+    , ldsDirP
+    ;
+
   // Poor Man's DB
   store.get = function (key) {
     if (!cache) {
@@ -108,25 +112,26 @@ var cache
     };
   }
 
-  var ldsDirP
-    ;
   function LdsDir() {
   }
   ldsDirP = LdsDir.prototype;
   ldsDirP.init = function (fns) {
-    this.areas = null;
-    this.homeArea = null;
-    this.homeAreaId = null;
+    var me = this
+      ;
 
-    this.stakes = null;
-    this.homeStake = null;
-    this.homeStakeId = null;
+    me.areas = null;
+    me.homeArea = null;
+    me.homeAreaId = null;
 
-    this.wards = null;
-    this.homeWard = null;
-    this.homeWardId = null;
+    me.stakes = null;
+    me.homeStake = null;
+    me.homeStakeId = null;
 
-    this._listeners = fns || {};
+    me.wards = null;
+    me.homeWard = null;
+    me.homeWardId = null;
+
+    me._listeners = fns || {};
   };
   ldsDirP.getHousehold = function (fn, id) {
     var me = this
@@ -172,13 +177,21 @@ var cache
   };
 
   ldsDirP.getWard = function (fn, wardUnitNo) {
-    var join = Join.create()
+    var me = this
+      , join = Join.create()
       , memberListId = 'member-list-' + wardUnitNo
-      , memberList = store.get(memberListId)
+      , fullMemberList = store.get(memberListId)
       ;
 
-    if (memberList) {
-      fn(memberList);
+    function onWardResult() {
+      if (me._listeners.memberList) {
+        me._listeners.memberList(fullMemberList);
+      }
+
+      fn(fullMemberList);
+    }
+    if (fullMemberList) {
+      onWardResult();
       return;
     }
     
@@ -204,9 +217,10 @@ var cache
         });
       });
 
-      store.set('member-list-' + wardUnitNo, memberList);
+      fullMemberList = memberList;
+      store.set('member-list-' + wardUnitNo, fullMemberList);
       // don't store photo list
-      fn(memberList);
+      onWardResult();
     });
   };
   ldsDirP.getWards = function (fn, wardUnitNos) {
@@ -245,6 +259,8 @@ var cache
       me.stakes = stakesInfo;
       me.homeStake = me.stakes[0];
       me.wards = me.homeStake.wards;
+      console.log('onResult getStakeInfo');
+      console.log(JSON.stringify(me, null, '  '));
       fn();
     }
 
@@ -302,7 +318,7 @@ var cache
     me.getStakeInfo(function () {
       me.getWards(function (households) {
         fn(households);
-      }, [me.homWardId]);
+      }, [me.homeWardId]);
     });
   };
   LdsDir.create = function () {

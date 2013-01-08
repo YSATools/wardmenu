@@ -8,7 +8,12 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 
   var $ = jQuery
     //, _ = require('underscore')
-    , domReady = $ //require('domready')
+    , domReady = function (fn) {
+        // don't allow jQuery to swallow all the stack traces!!!
+        $(function () {
+          setTimeout(fn, 0);
+        });
+      }
     , pure = require('pure').$p
     , request = require('ahr2')
     //, forEachAsync = require('forEachAsync')
@@ -124,9 +129,12 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     var img
       ;
 
-    $('#js-card-container .js-thumbnail').html('');
+    $('#js-card-container .js-thumbnail img').remove();
     img = new global.Image();
     img.src = src;
+    // TODO center profile pics like facebook does
+    // https://gist.github.com/3720379
+    /*
     $(img).load(function () {
       // TODO move to stylesheet class duh
       img.style.position = 'absolute';
@@ -135,17 +143,15 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       //left: 50%; margin-left: -50%;
       img.style.left = '50%';
       img.style.marginLeft = '-50%';
-      /*
-      */
       if (img.height < 200) {
         img.height = 200;
         img.removeAttribute('width');
       }
       // TODO center extra wide fotos
       img.style.marginLeft = '-' + (img.width / 2) + 'px';
-      //*/
     });
-    $('#js-card-container .js-thumbnail').append(img);
+    */
+    $('#js-card-container .js-thumbnail').prepend(img);
 
     return img;
   }
@@ -292,30 +298,35 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 
   }
 
-  module.exports = {
-      create: function () {
-      }
-    , init: function (_cards) {
-        domReady(function () {
-          cards = _cards;
+  function Facecards() {
+  }
+  Facecards.prototype.init = function (_cards) {
+    domReady(function () {
+      cards = _cards;
 
-          cache = JSON.parse(JSON.stringify(cards));
-          cache.sort(function (a, b) {
-            return a.name > b.name;
-          });
-
-          cards = JSON.parse(JSON.stringify(cards));
-          cards = cards.sort(function () {
-            return (Math.round(Math.random()) - 0.5);
-          }).filter(function (c) {
-            if (c.imageData || c.thumbnail) {
-              return true;
-            }
-          });
-
-          nextCard();
-          searchAgain();
+      cache = JSON.parse(JSON.stringify(cards));
+      cache.sort(function (a, b) {
+        return a.name > b.name;
       });
+
+      cards = JSON.parse(JSON.stringify(cards));
+      cards = cards.sort(function () {
+        return (Math.round(Math.random()) - 0.5);
+      }).filter(function (c) {
+        if (c.imageData || c.thumbnail) {
+          return true;
+        }
+      });
+
+      init();
+      nextCard();
+      searchAgain();
+    });
+  };
+
+  module.exports = {
+    create: function () {
+      return Object.create(Facecards.prototype);
     }
   };
 }());
