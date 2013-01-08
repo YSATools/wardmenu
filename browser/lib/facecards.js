@@ -54,8 +54,32 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       , result
       ;
 
+    function getValue(item) {
+      var val = 0
+        ;
+
+      // First name begins with
+      if (new RegExp('^' + input, 'i').test(item)) {
+        val += 1;
+      }
+
+      // Any name begins with
+      if (new RegExp('\b' + input, 'i').test(item)) {
+        val += 1;
+      }
+
+      // Caps match exactly i.e. McBride
+      if (new RegExp(input).test(item)) {
+        val += 1;
+      }
+
+      return val;
+    }
+
     result = cache.filter(function (item) {
       return new RegExp(input, 'i').test(item.name);
+    }).sort(function (a, b) {
+      return getValue(b) - getValue(a);
     });
 
     cb(result);

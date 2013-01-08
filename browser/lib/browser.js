@@ -380,20 +380,23 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
   }
 
   function updateCounter() {
-    $('#js-member-counter').text(1 + (Number($('#js-member-counter').text()) || 0));
+    $('.js-member-counter').text(1 + (Number($('.js-member-counter').text()) || 0));
   }
-  function updateMemberTotal() {
-    $('#js-member-total').text(1 + (Number($('#js-member-total').text()) || 0));
+  function updateMemberTotal(memberList) {
+    $('.js-member-total').text(memberList.length + (Number($('.js-member-total').text()) || 0));
   }
 
   function initLdsOrg() {
     var ldsOrg
       ;
 
+    domReady(function () {
+      $('#js-facecards-container').hide();
+    });
     ldsOrg = LdsOrg.create();
     ldsOrg.init({
         profile: updateCounter
-      , fullMemberList: updateMemberTotal
+      , memberList: updateMemberTotal
     });
 
     ldsOrg.getCurrentWardProfiles(function (profiles) {
@@ -433,6 +436,8 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
         };
       });
 
+      $('#js-facecards-container').show();
+      $('#js-wm-loading').hide();
       fc.init(cards);
     });
   }
