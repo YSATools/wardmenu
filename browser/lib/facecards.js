@@ -76,6 +76,11 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       return val;
     }
 
+    if (!input) {
+      cb([]);
+      return;
+    }
+
     result = cache.filter(function (item) {
       return new RegExp(input, 'i').test(item.name);
     }).sort(function (a, b) {
@@ -89,14 +94,6 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
   function searchAgainNow() {
     var input = $('#js-search-input').val().replace(/\s+/g, ' ').replace(/\s$/, '')
       ;
-
-    /*
-    if (!input) {
-      doRender([]);
-      // TODO clear results?
-      return;
-    }
-    */
 
     // don't send when simply using the arrow keys
     // or deleting the text in the field

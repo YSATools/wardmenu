@@ -144,6 +144,7 @@ var cache
       if (me._listeners.profile) {
         me._listeners.profile(profile);
       }
+
       fn(profile);
     }
 
@@ -187,6 +188,7 @@ var cache
         me._listeners.memberList(fullMemberList);
       }
 
+      me.myWardies = fullMemberList;
       fn(fullMemberList);
     }
     if (fullMemberList) {
@@ -210,7 +212,7 @@ var cache
           }
 
           member.householdId = photo.householdId;
-          member.householdName = photo.householdName;
+          member.householdPhotoName = photo.householdName;
           member.phoneNumber = photo.phoneNumber;
           member.photoUrl = member.photoUrl || photo.photoUrl;
         });
@@ -218,7 +220,6 @@ var cache
 
       fullMemberList = memberList;
       store.set('member-list-' + wardUnitNo, fullMemberList);
-      // don't store photo list
       onWardResult();
     });
   };
@@ -237,7 +238,8 @@ var cache
     }
 
     forEachAsync(wardUnitNos, pushMemberIds).then(function () {
-      me.getHouseholds(fn, profileIds);
+      // me.getHouseholds(fn, profileIds);
+      fn();
     });
   };
 
@@ -313,9 +315,7 @@ var cache
       ;
 
     me.getStakeInfo(function () {
-      me.getWards(function (households) {
-        fn(households);
-      }, [me.homeWardId]);
+      me.getWard(fn, me.homeWardId);
     });
   };
   LdsDir.create = function () {

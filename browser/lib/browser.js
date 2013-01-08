@@ -22,6 +22,35 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     , request = require('ahr2')
     ;
 
+  function getImageData(next, card, imgSrc) {
+    if (!imgSrc) {
+      next(new Error('no imgSrc'));
+      return;
+    }
+
+    var img
+      ;
+
+    img = document.createElement('img');
+    img.onload = function () {
+      var c = document.createElement('canvas')
+        , c2d = c.getContext('2d')
+        ;
+
+      c.height = this.height,
+      c.width = this.width;
+      c2d.drawImage(this, 0,0);
+
+      next(null, c.toDataURL('image/jpeg'));
+    };
+
+    img.onerror = function(){
+      next(new Error("Didn't load image"));
+    };
+
+    img.src = imgSrc;
+  }
+
   function initWardMenuNative() {
     domReady(function () {
       request.get('/bookmarklet.min.js').when(function (err, ahr, data) {
@@ -73,36 +102,6 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     $('.js-member-total').text(memberList.length + (Number($('.js-member-total').text()) || 0));
   }
 
-  function getImageData(next, card, imgSrc) {
-    if (!imgSrc) {
-      next(new Error('no imgSrc'));
-      return;
-    }
-
-    var img
-      ;
-
-    img = document.createElement('img');
-    img.onload = function () {
-      var c = document.createElement('canvas')
-        , c2d = c.getContext('2d')
-        ;
-
-      c.height = this.height,
-      c.width = this.width;
-      c2d.drawImage(this, 0,0);
-
-      next(null, c.toDataURL('image/jpeg'));
-    };
-
-    img.onerror = function(){
-      next(new Error("Didn't load image"));
-    };
-
-    img.src = imgSrc;
-  }
-
-
   function initLdsOrg() {
     var ldsOrg
       ;
@@ -112,8 +111,8 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     });
     ldsOrg = LdsOrg.create();
     ldsOrg.init({
-        profile: updateCounter
-      , memberList: updateMemberTotal
+        memberList: updateMemberTotal
+      //, profile: updateCounter
     });
 
     ldsOrg.getCurrentWardProfiles(function (profiles) {
@@ -124,27 +123,34 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 
       App.fullMemberList = profiles;
       cards = profiles.map(function (p) {
-        var names = p.headOfHousehold.name.split(',')
+        //var names = p.headOfHousehold.name.split(',')
+        var names = p.householdPhotoName.split(',')
           , last = names.shift().trim()
           , name = names.join(', ').trim() + ' ' + last
-          , photoUrl = p.householdInfo.photoUrl || p.headOfHousehold.photoUrl
             // TODO gender
             //, "imageData": h.imageData // added by download
-          , card = { name: name, thumbnail: photoUrl }
+          , card = { name: name, thumbnail: null, imageData: p.imageData, householdId: p.householdId }
           ;
 
         return card;
       });
+
       resetCounter();
       forEachAsync(cards, function (next, card) {
-        // caching for the future
-        getImageData(function (err, imageData) {
-          updateCounter();
-          //card.imageData = c.toDataURL('image/jpeg', 0.4);
-          card.imageData = imageData;
-          console.log('updated for', !!card.imageData);
+        if (card.imageData) {
           next();
-        }, card, card.thumbnail);
+          return;
+        }
+        ldsOrg.getHousehold(function (p) {
+          // caching for the future
+          card.thumbnail = p.householdInfo.photoUrl || p.headOfHousehold.photoUrl;
+          getImageData(function (err, imageData) {
+            updateCounter();
+            //card.imageData = c.toDataURL('image/jpeg', 0.4);
+            card.imageData = imageData;
+            next();
+          }, card, card.thumbnail);
+        }, card.householdId);
       }).then(function () {
         App.cards = cards;
 
