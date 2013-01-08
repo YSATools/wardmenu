@@ -15,6 +15,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
         });
       }
     //, _ = require('underscore')
+    , forEachAsync = require('forEachAsync')
     , location = require('location')
     , LdsOrg = require('./ldsorg')
     , Facecards = require('./facecards')
@@ -56,8 +57,17 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     });
   }
 
-  function updateCounter() {
-    $('.js-member-counter').text(1 + (Number($('.js-member-counter').text()) || 0));
+  function resetCounter(num) {
+    if ('number' !== typeof num) {
+      num = 0;
+    }
+    $('.js-member-counter').text(String(num));
+  }
+  function updateCounter(num) {
+    if ('number' !== typeof num) {
+      num = 1;
+    }
+    $('.js-member-counter').text(num + (Number($('.js-member-counter').text()) || 0));
   }
   function updateMemberTotal(memberList) {
     $('.js-member-total').text(memberList.length + (Number($('.js-member-total').text()) || 0));
@@ -125,15 +135,22 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
           , card = { name: name, thumbnail: photoUrl }
           ;
 
-        // caching for the future
-        getImageData(function () {}, card, photoUrl);
         return card;
       });
-      App.cards = cards;
+      resetCounter();
+      forEachAsync(cards, function (next, card) {
+        // caching for the future
+        getImageData(function () {
+          updateCounter();
+          next();
+        }, card, card.thumbnail);
+      }).then(function () {
+        App.cards = cards;
 
-      $('#js-facecards-container').show();
-      $('#js-wm-loading').hide();
-      fc.init(cards);
+        $('#js-facecards-container').show();
+        $('#js-wm-loading').hide();
+        fc.init(cards);
+      });
     });
   }
 
