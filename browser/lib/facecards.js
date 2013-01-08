@@ -268,7 +268,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     $('body').delegate('form#js-search', 'submit', function (ev) {
       ev.preventDefault();
       ev.stopPropagation();
-      $('#js-facecards-container ul li:first').click();
+      guessAndCheck();
       //searchAgainNow.call(this);
     });
     $('body').delegate('input#js-search-input', 'keyup', function (ev) {
