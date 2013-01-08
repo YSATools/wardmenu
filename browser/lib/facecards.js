@@ -231,7 +231,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     $('body').delegate('form#js-search', 'submit', function (ev) {
       ev.preventDefault();
       ev.stopPropagation();
-      $('ul li:first').click();
+      $('#js-facecards-container ul li:first').click();
       //searchAgainNow.call(this);
     });
     $('body').delegate('input#js-search-input', 'keyup', function (ev) {
