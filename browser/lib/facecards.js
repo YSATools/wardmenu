@@ -293,6 +293,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       if (fact === guess) {
         global.alert('Good Jorb!');
         nextCard();
+        searchAgain();
       } else {
         global.alert('Bad Jorb!');
         $('#js-search-input').val('');
