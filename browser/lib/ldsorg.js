@@ -171,7 +171,6 @@ var cache
     }
 
     forEachAsync(profileIds, gotOneHousehold).then(function () {
-      console.log(membersInfo);
       fn(membersInfo);
     });
   };
@@ -259,8 +258,6 @@ var cache
       me.stakes = stakesInfo;
       me.homeStake = me.stakes[0];
       me.wards = me.homeStake.wards;
-      console.log('onResult getStakeInfo');
-      console.log(JSON.stringify(me, null, '  '));
       fn();
     }
 

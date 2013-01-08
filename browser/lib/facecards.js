@@ -343,7 +343,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
         }
       });
 
-      init();
+      domReady(init);
       nextCard();
       searchAgain();
     });
