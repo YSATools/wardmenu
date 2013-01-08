@@ -63,6 +63,38 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     $('.js-member-total').text(memberList.length + (Number($('.js-member-total').text()) || 0));
   }
 
+  function getImageData(next, card, imgSrc) {
+    if (!card.photoUrl) {
+      next();
+      return;
+    }
+
+    var img
+      ;
+
+    img = document.createElement('img');
+    img.onload = function () {
+      var c = document.createElement('canvas')
+        , c2d = c.getContext('2d')
+        ;
+
+      c.height = this.height,
+      c.width = this.width;
+      c2d.drawImage(this, 0,0);
+
+      //card.imageData = c.toDataURL('image/jpeg', 0.4);
+      card.imageData = c.toDataURL('image/jpeg');
+      next();
+    };
+
+    img.onerror = function(){
+      next();
+    };
+
+    img.src = imgSrc;
+  }
+
+
   function initLdsOrg() {
     var ldsOrg
       ;
@@ -82,36 +114,20 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
         //, emails = []
         ;
 
-      // TODO events
-      /*
-      ldsDir.init({
-          'stake': function (stake) {
-            console.log('stake has ' + stake.wards.length + ' wards');
-          }
-        , 'ward': function (ward) {
-            console.log('stake z, downolading ward x of y, ' + ward..length + ' households');
-          }
-        , 'profile': function (profile) {
-            console.log('stake z, ward x, household y of q, ' + ward.length + ' households');
-            // TODO ward + household + photo
-          }
-      });
-      */
-
       App.fullMemberList = profiles;
       cards = profiles.map(function (p) {
         var names = p.headOfHousehold.name.split(',')
           , last = names.shift().trim()
           , name = names.join(', ').trim() + ' ' + last
+          , photoUrl = p.householdInfo.photoUrl || p.headOfHousehold.photoUrl
+            // TODO gender
+            //, "imageData": h.imageData // added by download
+          , card = { name: name, thumbnail: photoUrl }
           ;
 
-        return {
-            name: name
-          , thumbnail: p.householdInfo.photoUrl || p.headOfHousehold.photoUrl
-              //p.photoUrl
-          // TODO gender
-          //, "imageData": h.imageData // added by download
-        };
+        // caching for the future
+        getImageData(function () {}, card, photoUrl);
+        return card;
       });
       App.cards = cards;
 
@@ -143,37 +159,9 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     });
     */
 
-
     // TODO get each image as imageData
 /*
     function getPic(next, card) {
-      if (!card.photoUrl) {
-        next();
-        return;
-      }
-
-      var img
-        ;
-
-      img = document.createElement('img');
-      img.onload = function () {
-        var c = document.createElement('canvas')
-          , c2d = c.getContext('2d')
-          ;
-
-        c.height = this.height,
-        c.width = this.width;
-        c2d.drawImage(this, 0,0);
-
-        card.imageData = c.toDataURL('image/jpeg', 0.4);
-        next();
-      };
-
-      img.onerror = function(){
-        next();
-      };
-
-      img.src = card.photoUrl;
     }
       profile.photoUrl = profile.householdInfo.photoUrl || profile.headOfHousehold.photoUrl;
       getPic(onResult, profile);
