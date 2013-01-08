@@ -137,7 +137,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     searchDeckCache(doRender);
   }
 
-  function showHint() {
+  function unusedShowHint() {
     // TODO use data attribute
     var hintLen = $('#js-card-container .js-name-hints').text().length
       , fullLen = $('#js-card-container .js-name').text().length
@@ -147,6 +147,27 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       global.alert('You already have the full answer. Seriously, quit trying to get a hint!');
       return;
     }
+  }
+  function takePunishment() {
+    currentCard.badCount = currentCard.badCount || 0;
+    currentCard.badCount += 1;
+  }
+  function showHint() {
+    var hint = $('.js-name-hints').text()
+      ;
+
+    // TODO do this data storage in an object, not in the DOM, duh!
+    hint = $('.js-name').text().substr(0, hint.length + 1);
+    while (' ' === hint[hint.length - 1]) {
+      hint = $('.js-name').text().substr(0, hint.length + 1);
+    }
+
+    $('.js-name-hints').text(hint);
+
+    $('input#js-search-input').val(hint);
+    
+    takePunishment();
+    searchDeckCache(doRender);
   }
 
   function sizeImage(src) {
@@ -259,27 +280,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 
       //ensureHint();
     });
-    $('body').delegate('button.js-hint', 'click', function () {
-      var hint = $('.js-name-hints').text()
-        ;
-
-      // do this data storage in an object, not in the DOM, duh!
-      console.log('hit the button', hint);
-
-      hint = $('.js-name').text().substr(0, hint.length + 1);
-      while (' ' === hint[hint.length - 1]) {
-        hint = $('.js-name').text().substr(0, hint.length + 1);
-      }
-
-      console.log('hit the button 2', hint, $('.js-name-hints').text());
-
-      $('.js-name-hints').text(hint);
-
-      console.log('hit the button 3', $('.js-name-hints').text());
-      $('input#js-search-input').val(hint);
-      
-      searchDeckCache(doRender);
-    });
+    $('body').delegate('button.js-hint', 'click', showHint);
     $('body').delegate('.js-result-item', 'click', function () {
       var guess
         , fact
@@ -296,9 +297,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
         doRender([]);
       } else {
         global.alert('Bad Jorb!');
-        $('#js-search-input').val('');
-        currentCard.badCount = currentCard.badCount || 0;
-        currentCard.badCount += 1;
+        showHint();
       }
     });
 
