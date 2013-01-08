@@ -64,7 +64,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       }
 
       // Any name begins with
-      if (new RegExp('\b' + input, 'i').test(item)) {
+      if (new RegExp('\\b' + input, 'i').test(item)) {
         val += 1;
       }
 
@@ -79,7 +79,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     result = cache.filter(function (item) {
       return new RegExp(input, 'i').test(item.name);
     }).sort(function (a, b) {
-      return getValue(b) - getValue(a);
+      return getValue(b.name) - getValue(a.name);
     });
 
     cb(result);
