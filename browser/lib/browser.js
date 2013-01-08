@@ -6,7 +6,8 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 (function () {
   "use strict";
 
-  var $ = jQuery
+  var App = module.exports
+    , $ = jQuery
     , domReady = function (fn) {
         // don't allow jQuery to swallow all the stack traces!!!
         $(function () {
@@ -97,6 +98,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       });
       */
 
+      App.fullMemberList = profiles;
       cards = profiles.map(function (p) {
         var names = p.headOfHousehold.name.split(',')
           , last = names.shift().trim()
@@ -111,6 +113,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
           //, "imageData": h.imageData // added by download
         };
       });
+      App.cards = cards;
 
       $('#js-facecards-container').show();
       $('#js-wm-loading').hide();
@@ -178,4 +181,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 
     uploadWardDeck();
   }
+
+  App.fullMemberList = null;
+  App.cards = null;
 }());

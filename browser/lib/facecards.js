@@ -117,7 +117,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     searchDeckCache(doRender, input);
   }
 
-  function doRender(object) {
+  function doRender(obj) {
     var searchDirective = {
       ".js-result-item": {
         "o <-": {
@@ -128,7 +128,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     };
 
     $('#js-results-container').html(searchTpl);
-    pure('#js-results-container').render(object, searchDirective);
+    pure('#js-results-container').render(obj, searchDirective);
   }
 
   function searchAgain() {
@@ -293,7 +293,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       if (fact === guess) {
         global.alert('Good Jorb!');
         nextCard();
-        searchAgain();
+        doRender([]);
       } else {
         global.alert('Bad Jorb!');
         $('#js-search-input').val('');
@@ -343,7 +343,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
         }
       });
 
-      domReady(init);
+      init();
       nextCard();
       searchAgain();
     });
