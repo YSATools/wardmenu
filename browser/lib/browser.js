@@ -74,8 +74,8 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
   }
 
   function getImageData(next, card, imgSrc) {
-    if (imgSrc) {
-      next();
+    if (!imgSrc) {
+      next(new Error('no imgSrc'));
       return;
     }
 
@@ -92,13 +92,11 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       c.width = this.width;
       c2d.drawImage(this, 0,0);
 
-      //card.imageData = c.toDataURL('image/jpeg', 0.4);
-      card.imageData = c.toDataURL('image/jpeg');
-      next();
+      next(null, c.toDataURL('image/jpeg'));
     };
 
     img.onerror = function(){
-      next();
+      next(new Error("Didn't load image"));
     };
 
     img.src = imgSrc;
@@ -140,8 +138,11 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       resetCounter();
       forEachAsync(cards, function (next, card) {
         // caching for the future
-        getImageData(function () {
+        getImageData(function (err, imageData) {
           updateCounter();
+          //card.imageData = c.toDataURL('image/jpeg', 0.4);
+          card.imageData = imageData;
+          console.log('updated for', !!card.imageData);
           next();
         }, card, card.thumbnail);
       }).then(function () {
