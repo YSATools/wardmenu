@@ -1,4 +1,4 @@
-/*jshint strict:true jquery:true browser:true node:true es5:true scripturl:true
+/*jshint strict:true jquery:true browser:true node:true es5:true scripturl:true eqeqeq:true immed:true
 onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 /*
  * BROWSER
@@ -7,11 +7,8 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
   "use strict";
 
   var $ = jQuery
-    , domReady = $
     //, _ = require('underscore')
-    , location = require('location')
-    , LdsOrg = require('./ldsorg')
-    , Facecards = require('./facecards')
+    , domReady = $ //require('domready')
     , pure = require('pure').$p
     , request = require('ahr2')
     //, forEachAsync = require('forEachAsync')
@@ -293,194 +290,32 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       request.post('/upload', null, f);
     });
 
-    //request.get("/meta").when(function (err, ahr, data)
-    function getDeck(cb, search) {
-      if (!location.hash.substr(1)) {
-        location.hash = '#mock.json';
+  }
+
+  module.exports = {
+      create: function () {
       }
+    , init: function (_cards) {
+        domReady(function () {
+          cards = _cards;
 
-      request.get("/decks/" + location.hash.substr(1)).when(function (err, ahr, data) {
-      //request.get("/meta?search=" + encodeURIComponent(search)).when(function (err, ahr, data)
-        if (err || !Array.isArray(data)) {
-          console.error(data && data.errors || data || "unsuccessful ajas");
-          window.alert("Sometimes bad things happen to good people... This is one of those times. :'(");
-          window.alert("Couldn't find a card deck by that name");
-          location.hash = '';
-          getDeck(cb, search);
-          return;
-        }
+          cache = JSON.parse(JSON.stringify(cards));
+          cache.sort(function (a, b) {
+            return a.name > b.name;
+          });
 
-        ajasMutex = false;
+          cards = JSON.parse(JSON.stringify(cards));
+          cards = cards.sort(function () {
+            return (Math.round(Math.random()) - 0.5);
+          }).filter(function (c) {
+            if (c.imageData || c.thumbnail) {
+              return true;
+            }
+          });
 
-        cards = data;
-
-        cache = JSON.parse(JSON.stringify(cards));
-        cache.sort(function (a, b) {
-          return a.name > b.name;
-        });
-
-        cards = JSON.parse(JSON.stringify(cards));
-        cards = cards.sort(function () {
-          return (Math.round(Math.random()) - 0.5);
-        }).filter(function (c) {
-          if (c.imageData || c.thumbnail) {
-            return true;
-          }
-        });
-
-        cb();
+          nextCard();
+          searchAgain();
       });
     }
-
-    getDeck(function () {
-      nextCard();
-      searchAgain();
-    });
-  }
-
-  function initWardMenuNative() {
-    domReady(function () {
-      request.get('/bookmarklet.min.js').when(function (err, ahr, data) {
-        data = 'javascript:' + data.replace(/LOCATION_HOST/g, location.host);
-        $('#js-bookmarklet').attr('href', data);
-      });
-    });
-    domReady(init);
-  }
-
-  function uploadWardDeck(cards) {
-    var deckId = window.prompt('Name this deck (should end with .json)')
-      ;
-
-    if (!/\.json$/.test(deckId)) {
-      deckId += '.json';
-      window.alert('deckId changed to ' + deckId);
-    }
-
-    console.log('got wards b');
-    $.ajax({
-        type: 'POST'
-      , url: 'http://LOCATION_HOST/decks/' + deckId
-      , contentType: 'application/json; charset=utf-8'
-      , data: JSON.stringify(cards)
-      , processData: false
-      , success: function (data) {
-          if (!data || !data.success) {
-            window.alert('had error posting deck');
-            return;
-          }
-          location.href = 'http://LOCATION_HOST#' + deckId;
-        }
-    });
-  }
-
-  function updateCounter() {
-    $('#js-counter').text(1 + (Number($('#js-counter').text()) || 0));
-  }
-
-  function initLdsOrg() {
-    var ldsOrg
-      ;
-
-    ldsOrg = LdsOrg.create();
-    ldsOrg.init({
-      profile: updateCounter
-    });
-
-    ldsOrg.getCurrentWardProfiles(function (profiles) {
-      var fc = Facecards.create()
-        , cards
-        //, emails = []
-        ;
-
-      // TODO events
-      /*
-      ldsDir.init({
-          'stake': function (stake) {
-            console.log('stake has ' + stake.wards.length + ' wards');
-          }
-        , 'ward': function (ward) {
-            console.log('stake z, downolading ward x of y, ' + ward..length + ' households');
-          }
-        , 'profile': function (profile) {
-            console.log('stake z, ward x, household y of q, ' + ward.length + ' households');
-            // TODO ward + household + photo
-          }
-      });
-      */
-
-      cards = profiles.map(function (p) {
-        return {
-            name: p.headOfHousehold.name
-          , thumbnail: p.householdInfo.photoUrl || p.headOfHousehold.photoUrl
-              //p.photoUrl
-          // TODO gender
-          //, "imageData": h.imageData // added by download
-        };
-      });
-
-      fc.init(cards);
-    });
-  }
-
-  if (!/\blds.org\b/.test(location.host)) {
-    initWardMenuNative();
-    return;
-  } else {
-    initLdsOrg();
-  }
-
-  if (false) {
-    // TODO attach event handler
-
-    /*
-    // TODO button for send e-mail to the whole ward
-    households.forEach(function (m) {
-      var email = m.householdInfo.email || m.headOfHousehold.email
-        ;
-
-      if (email) {
-        emails.push(email);
-      }
-    });
-    */
-
-
-    // TODO get each image as imageData
-/*
-    function getPic(next, card) {
-      if (!card.photoUrl) {
-        next();
-        return;
-      }
-
-      var img
-        ;
-
-      img = document.createElement('img');
-      img.onload = function () {
-        var c = document.createElement('canvas')
-          , c2d = c.getContext('2d')
-          ;
-
-        c.height = this.height,
-        c.width = this.width;
-        c2d.drawImage(this, 0,0);
-
-        card.imageData = c.toDataURL('image/jpeg', 0.4);
-        next();
-      };
-
-      img.onerror = function(){
-        next();
-      };
-
-      img.src = card.photoUrl;
-    }
-      profile.photoUrl = profile.householdInfo.photoUrl || profile.headOfHousehold.photoUrl;
-      getPic(onResult, profile);
-*/
-
-    uploadWardDeck();
-  }
+  };
 }());

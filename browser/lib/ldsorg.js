@@ -1,12 +1,9 @@
-/*jshint strict:true browser:true debug:true jquery:true es5:true onevar:true laxcomma:true laxbreak:true eqeqeq:true immed:true latedef:true unused:true undef:true*/
+/*jshint devel:true strict:true browser:true node:true jquery:true es5:true
+onevar:true laxcomma:true laxbreak:true eqeqeq:true immed:true latedef:true unused:true undef:true*/
 var cache
   , Join = null
   , store = {}
-  , gmembers
-  , gcards
-  , ldsDir
   , emitter = {}
-    // TODO don't... just don't
   , ludrsBase = 'https://www.lds.org/directory/services/ludrs'
   ;
 
@@ -16,7 +13,7 @@ var cache
   // Poor Man's DB
   store.get = function (key) {
     if (!cache) {
-      cache = {};//JSON.parse(localStorage.getItem('cache') || "{}");
+      cache = {}; //JSON.parse(localStorage.getItem('cache') || "{}");
     }
 
     return cache[key];
@@ -150,40 +147,9 @@ var cache
       return;
     }
 
-    function getPic(next, card) {
-      if (!card.photoUrl) {
-        next();
-        return;
-      }
-
-      var img
-        ;
-
-      img = document.createElement('img');
-      img.onload = function () {
-        var c = document.createElement('canvas')
-          , c2d = c.getContext('2d')
-          ;
-
-        c.height = this.height,
-        c.width = this.width;
-        c2d.drawImage(this, 0,0);
-
-        card.imageData = c.toDataURL('image/jpeg', 0.4);
-        next();
-      };
-
-      img.onerror = function(){
-        next();
-      };
-
-      img.src = card.photoUrl;
-    }
-
     $.getJSON(ludrsBase + '/mem/householdProfile/' + id, function (_profile) {
       profile = _profile;
-      profile.photoUrl = profile.householdInfo.photoUrl || profile.headOfHousehold.photoUrl;
-      getPic(onResult, profile);
+      onResult();
     });
   };
 
@@ -300,104 +266,48 @@ var cache
       });
     });
   };
-
-  function updateCounter() {
-    $('#js-counter').text(1 + (Number($('#js-counter').text()) || 0));
-  }
-  //ldsDir = Object.create(LdsDir);
-  ldsDir = new LdsDir();
-/*
-  // TODO events
-  ldsDir.init({
-      'stake': function (stake) {
-        console.log('stake has ' + stake.wards.length + ' wards');
-      }
-    , 'ward': function (ward) {
-        console.log('stake z, downolading ward x of y, ' + ward..length + ' households');
-      }
-    , 'profile': function (profile) {
-        console.log('stake z, ward x, household y of q, ' + ward.length + ' households');
-        // TODO ward + household + photo
-      }
-  });
-*/
-  ldsDir.init({
-    profile: updateCounter
-  });
-
-  function onStakeInfo() {
-    var cards = []
-      , wards = ldsDir.wards
-      , wardUnitNos = []
+  ldsDirP.getCurrentStakeProfiles = function (fn) {
+    var me = this
       ;
 
-    if (!$('#js-counter').length) {
-      $('body').prepend(
-        '<div style="'
-          + 'z-index: 100000; position:fixed;'
-          + 'top:40%; width:200px; height:50px;'
-          + 'right: 50%; background-color:black;'
-        + '" id="js-counter">0</div>'
-      );
-    }
-
-    // TODO use underscore.pluck
-    wards.forEach(function (w) {
-      wardUnitNos.push(w.wardUnitNo);
-    });
-
-    ldsDir.getWards(function (households) {
-      console.log('getWards');
-      var emails = []
-        , deckId
+    function onStakeInfo() {
+      var wards = ldsDir.wards
+        , wardUnitNos = []
         ;
 
-      console.log('got wards 9');
-      households.forEach(function (m) {
-        var email = m.householdInfo.email || m.headOfHousehold.email
-          ;
-
-        if (email) {
-          emails.push(email);
-        }
-      });
-
-      gmembers = households;
-
-      console.log('got wards a');
-      households.forEach(function (h) {
-        cards.push({
-            "name": h.headOfHousehold.name
-          //TODO, "gender": 
-          , "imageData": h.imageData // added by download
-        });
-      });
-
-      gcards = cards;
-
-      console.log('got wards a.2');
-      deckId = prompt('Name this deck (should end with .json)');
-      if (!/\.json$/.test(deckId)) {
-        deckId += '.json';
-        alert('deckId changed to ' + deckId);
+      if (!$('#js-counter').length) {
+        $('body').prepend(
+          '<div style="'
+            + 'z-index: 100000; position:fixed;'
+            + 'top:40%; width:200px; height:50px;'
+            + 'right: 50%; background-color:black;'
+          + '" id="js-counter">0</div>'
+        );
       }
 
-      console.log('got wards b');
-      $.ajax({
-          type: 'POST'
-        , url: 'http://LOCATION_HOST/decks/' + deckId
-        , contentType: 'application/json; charset=utf-8'
-        , data: JSON.stringify(cards)
-        , processData: false
-        , success: function (data) {
-            if (!data || !data.success) {
-              alert('had error posting deck');
-              return;
-            }
-            location.href = 'http://LOCATION_HOST#' + deckId;
-          }
+      // TODO use underscore.pluck
+      wards.forEach(function (w) {
+        wardUnitNos.push(w.wardUnitNo);
       });
-    }, [ldsDir.homeWardId] || ldsDir.homeStake.wards);
-  }
-  ldsDir.getStakeInfo(onStakeInfo);
+
+      ldsDir.getWards(fn, ldsDir.homeStake.wards);
+    }
+
+    me.getStakeInfo(onStakeInfo);
+  };
+  ldsDirP.getCurrentWardProfiles = function (fn) {
+    var me = this
+      ;
+
+    me.getStakeInfo(function () {
+      me.getWards(function (households) {
+        fn(households);
+      }, [me.homWardId]);
+    });
+  };
+  LdsDir.create = function () {
+    return Object.create(LdsDir);
+  };
+
+  module.exports = LdsDir;
 }());

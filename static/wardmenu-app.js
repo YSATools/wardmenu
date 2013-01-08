@@ -24,7 +24,6 @@ onevar:true laxcomma:true laxbreak:true eqeqeq:true immed:true latedef:true unde
   $('#js-wm-root').load("http://thewardmenu.com/widget.html");
 
   $.get('http://thewardmenu.com/pakmanaged.js', function (jsText) {
-    console.log('got more script (but not)');
-    //$('<script>' + jsText + '</script>').appendTo('head');
+    $('<script>' + jsText + '</script>').appendTo('head');
   }, 'text');
 }());
