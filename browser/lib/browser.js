@@ -74,7 +74,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
   }
 
   function getImageData(next, card, imgSrc) {
-    if (!card.photoUrl) {
+    if (imgSrc) {
       next();
       return;
     }
