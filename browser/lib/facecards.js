@@ -243,6 +243,25 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     loadCard(currentCard);
   }
 
+  function guessAndCheck(guess) {
+    var fact
+      ;
+
+    guess = guess || $('.js-result-item:first').text().trim();
+
+    // TODO use uid to index into deck
+    /*jshint validthis:true*/
+    fact = $('#js-card-container .js-name').text();
+
+    if (fact === guess) {
+      global.alert('Good Jorb!');
+      nextCard();
+      doRender([]);
+    } else {
+      global.alert('Bad Jorb!');
+      showHint();
+    }
+  }
 
   function init() {
     searchTpl = $('#js-results-container').html();
@@ -279,23 +298,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     });
     $('body').delegate('button.js-hint', 'click', showHint);
     $('body').delegate('.js-result-item', 'click', function () {
-      var guess
-        , fact
-        ;
-
-      // TODO use uid to index into deck
-      /*jshint validthis:true*/
-      guess = $(this).text();
-      fact = $('#js-card-container .js-name').text();
-
-      if (fact === guess) {
-        global.alert('Good Jorb!');
-        nextCard();
-        doRender([]);
-      } else {
-        global.alert('Bad Jorb!');
-        showHint();
-      }
+      guessAndCheck($(this).text());
     });
 
     $('body').delegate('div#js-updrop form', 'submit', function (ev) {
