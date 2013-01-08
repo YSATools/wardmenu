@@ -271,7 +271,7 @@ var cache
       ;
 
     function onStakeInfo() {
-      var wards = ldsDir.wards
+      var wards = me.wards
         , wardUnitNos = []
         ;
 
@@ -290,7 +290,7 @@ var cache
         wardUnitNos.push(w.wardUnitNo);
       });
 
-      ldsDir.getWards(fn, ldsDir.homeStake.wards);
+      me.getWards(fn, me.homeStake.wards);
     }
 
     me.getStakeInfo(onStakeInfo);
@@ -306,7 +306,7 @@ var cache
     });
   };
   LdsDir.create = function () {
-    return Object.create(LdsDir);
+    return Object.create(LdsDir.prototype);
   };
 
   module.exports = LdsDir;
