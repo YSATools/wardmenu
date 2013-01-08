@@ -3,19 +3,28 @@ onevar:true laxcomma:true laxbreak:true eqeqeq:true immed:true latedef:true unde
 (function () {
   "use strict";
 
-  // TODO this is just a holdover while developing because a gist is easier to update
+  // Neither of these work due to security restrictions
+  // $('<link rel="stylesheet" type="text/css" href="http://thewardmenu.com/widget.css" media="screen" />')
+  // $('<link rel="stylesheet" type="text/css" href="https://gist.github.com/raw/281972c6db467628e776/wardmenu-app.css" media="screen" />').appendTo('head');
 
-  if ($('#js-wardmenu-script-gist').length) {
+  if (!/\blds.org\b/.test(location.host)) {
+    window.alert('You are not on LDS.org. Please login to LDS.org and then load WardMenu.');
     return;
   }
 
-  var wardmenuJs = document.createElement("script")
-    ;
+  // This does work, however
+  $.get('http://thewardmenu.com/widget.css', function (cssText) {
+    $('<style>' + cssText + '</style>').appendTo('head').html(cssText);
+  }, 'text');
+  
+  if (!$('#js-wm-root').length) {
+    $('body').append('<div id="js-wm-root"></div>');
+  }
+  
+  $('#js-wm-root').load("http://thewardmenu.com/widget.html");
 
-  /* TODO put on thewardmenu.com with https */
-  /* wardmenuJs.src = "http://thewardmenu.com/wardmenu-app.js"; */
-  /* wardmenuJs.src = "https://raw.github.com/coolaj86/wardmenu/master/static/wardmenu-app.js"; */
-  wardmenuJs.src = "https://gist.github.com/raw/281972c6db467628e776/wardmenu-app.js";
-  wardmenuJs.id = "js-wardmenu-script-gist";
-  document.body.appendChild(wardmenuJs);
+  $.get('http://thewardmenu.com/pakmanaged.js', function (jsText) {
+    console.log('got more script (but not)');
+    //$('<script>' + jsText + '</script>').appendTo('head');
+  }, 'text');
 }());
