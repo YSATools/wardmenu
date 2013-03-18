@@ -1,5 +1,3 @@
-/*jshint strict:true jquery:true browser:true node:true es5:true scripturl:true
-onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 /*
  * BROWSER
  */
@@ -7,18 +5,13 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
   "use strict";
 
   var App = module.exports
-    , $ = jQuery
-    , domReady = function (fn) {
-        // don't allow jQuery to swallow all the stack traces!!!
-        $(function () {
-          setTimeout(fn, 0);
-        });
-      }
+    , $ = require('jQuery')
+    , domReady = $
     //, _ = require('underscore')
     , forEachAsync = require('forEachAsync')
     , location = require('location')
-    , LdsOrg = require('./ldsorg')
-    , Facecards = require('./facecards')
+    , LdsOrg = require('./lib/ldsorg')
+    , Facecards = require('./lib/facecards')
     , request = require('ahr2')
     ;
 

@@ -1,5 +1,3 @@
-/*jshint strict:true browser:true jquery:true es5:true
-onevar:true laxcomma:true laxbreak:true eqeqeq:true immed:true latedef:true undef:true unused:true*/
 (function () {
   "use strict";
 
@@ -23,7 +21,11 @@ onevar:true laxcomma:true laxbreak:true eqeqeq:true immed:true latedef:true unde
   
   $('#js-wm-root').load("http://thewardmenu.com/widget.html");
 
-  $.get('http://thewardmenu.com/pakmanaged.js', function (jsText) {
+  $.get('http://thewardmenu.com/pouchdb-nightly.js', function (jsText) {
     $('<script>' + jsText + '</script>').appendTo('head');
+
+    $.get('http://thewardmenu.com/pakmanaged.js', function (jsText) {
+      $('<script>' + jsText + '</script>').appendTo('head');
+    }, 'text');
   }, 'text');
 }());

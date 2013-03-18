@@ -1,5 +1,3 @@
-/*jshint strict:true jquery:true browser:true node:true es5:true scripturl:true eqeqeq:true immed:true
-onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 (function () {
   "use strict";
 

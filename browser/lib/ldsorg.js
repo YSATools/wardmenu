@@ -1,5 +1,3 @@
-/*jshint devel:true strict:true browser:true node:true jquery:true es5:true
-onevar:true laxcomma:true laxbreak:true eqeqeq:true immed:true latedef:true unused:true undef:true*/
 var cache
   , Join = null
   , store = {}
@@ -10,7 +8,7 @@ var cache
 (function () {
   "use strict";
   
-  var $ = jQuery
+  var $ = require('jQuery')
     , ldsDirP
     ;
 

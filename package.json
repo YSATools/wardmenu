@@ -14,7 +14,6 @@
     "registry": "https://registry.npmjs.org"
   },
   "scripts": {
-    "prepublish": "node deploy"
   },
   "dependencies": {
     "connect": "2.x",
@@ -38,8 +37,15 @@
     "uglify-js": "1.x",
     "mkdirp": ">=0.3.4 <0.4.0"
   },
-  "main": "server/server",
-  "devDependencies": {},
+  "main": "server.js",
+  "devDependencies": {
+    "grunt-develop": "0.0.2",
+    "grunt-contrib-watch": "~0.3.1",
+    "grunt-contrib-jade": "~0.5.0",
+    "grunt-contrib-less": "~0.5.0",
+    "grunt": "~0.4.1",
+    "grunt-pakmanager": "~0.2.2"
+  },
   "optionalDependencies": {},
   "engines": {
     "node": "*"

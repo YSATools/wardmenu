@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  var steve = require('./steve')
+  var steve = require('./lib/steve')
     , path = require('path')
     , connect = require('connect')
     , mkdirp = require('mkdirp')
@@ -53,8 +53,8 @@
     //rest.get('/decks/:deckId', getDeck);
     rest.post('/decks/:deckId', putDeck);
     rest.get('/meta', getMeta);
-    rest.post('/upload', require('./upload-pic')());
-    rest.post('/lds-directory', require('./lds-directory')());
+    rest.post('/upload', require('./lib/upload-pic')());
+    rest.post('/lds-directory', require('./lib/lds-directory')());
   }
 
   app

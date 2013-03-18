@@ -6,14 +6,9 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 (function () {
   "use strict";
 
-  var $ = jQuery
+  var $ = require('jQuery')
     //, _ = require('underscore')
-    , domReady = function (fn) {
-        // don't allow jQuery to swallow all the stack traces!!!
-        $(function () {
-          setTimeout(fn, 0);
-        });
-      }
+    , domReady = $
     , pure = require('pure').$p
     , request = require('ahr2')
     //, forEachAsync = require('forEachAsync')
