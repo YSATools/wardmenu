@@ -8,43 +8,15 @@
     , $ = require('jQuery')
     , domReady = $
     //, _ = require('underscore')
-    , forEachAsync = require('forEachAsync')
     , location = require('location')
     , LdsOrg = require('./lib/ldsorg')
     , Facecards = require('./lib/facecards')
     , request = require('ahr2')
+    , shuffle = require('./lib/shuffle')
     ;
 
-  function getImageData(next, card, imgSrc) {
-    if (!imgSrc) {
-      next(new Error('no imgSrc'));
-      return;
-    }
-
-    var img
-      ;
-
-    img = document.createElement('img');
-    img.onload = function () {
-      var c = document.createElement('canvas')
-        , c2d = c.getContext('2d')
-        ;
-
-      c.height = this.height,
-      c.width = this.width;
-      c2d.drawImage(this, 0,0);
-
-      next(null, c.toDataURL('image/jpeg'));
-    };
-
-    img.onerror = function(){
-      next(new Error("Didn't load image"));
-    };
-
-    img.src = imgSrc;
-  }
-
   function initWardMenuNative() {
+    /*jshint scripturl:true */
     domReady(function () {
       request.get('/bookmarklet.min.js').when(function (err, ahr, data) {
         data = 'javascript:' + data.replace(/LOCATION_HOST/g, location.host);
@@ -97,68 +69,94 @@
 
   function initLdsOrg() {
     var ldsOrg
+      , fcHasRun = false
+      , count = 0
+      , minCount = 5
+      , fc
       ;
+
+    function startGettin() {
+      ldsOrg.getCurrentWardProfiles(function (profiles) {
+        console.log('I can haz all the ward member profilez!');
+        App.fullMemberList = profiles;
+      });
+    }
 
     domReady(function () {
       $('#js-facecards-container').hide();
     });
+
     ldsOrg = LdsOrg.create();
-    ldsOrg.init({
+    ldsOrg.init(startGettin, {
         memberList: updateMemberTotal
       //, profile: updateCounter
-    });
+      , profile: function () {
+          if (fcHasRun) {
+            return;
+          }
+          if (count < minCount) {
+            count += 1;
+            return;
+          }
 
-    ldsOrg.getCurrentWardProfiles(function (profiles) {
-      var fc = Facecards.create()
-        , cards
-        //, emails = []
-        ;
-
-      App.fullMemberList = profiles;
-      cards = profiles.map(function (p) {
-        //var names = p.headOfHousehold.name.split(',')
-        var names = p.householdPhotoName.split(',')
-          , last = names.shift().trim()
-          , name = names.join(', ').trim() + ' ' + last
-            // TODO gender
-            //, "imageData": h.imageData // added by download
-          , card = { name: name, thumbnail: null, imageData: p.imageData, householdId: p.householdId }
-          ;
-
-        return card;
-      });
-
-      resetCounter();
-      forEachAsync(cards, function (next, card) {
-        if (card.imageData) {
-          next();
-          return;
+          doStuff();
+          fcHasRun = true;
+          $('#js-facecards-container').show();
+          $('#js-wm-loading').hide();
         }
-        ldsOrg.getHousehold(function (p) {
-          // caching for the future
-          card.thumbnail = p.householdInfo.photoUrl || p.headOfHousehold.photoUrl;
-          getImageData(function (err, imageData) {
-            updateCounter();
-            //card.imageData = c.toDataURL('image/jpeg', 0.4);
-            card.imageData = imageData;
-            next();
-          }, card, card.thumbnail);
-        }, card.householdId);
-      }).then(function () {
-        App.cards = cards;
-
-        $('#js-facecards-container').show();
-        $('#js-wm-loading').hide();
-        fc.init(cards);
-      });
     });
+
+
+    fc = Facecards.create();
+    function doStuff() {
+      function gimmeSomeCards(cb) {
+        ldsOrg.store.query(getWardMembers, { reduce: false }, function (err, profiles) {
+          var cards
+            ;
+          //response.sort(randomize);
+          cards = shuffle(profiles).map(function (p) {
+            //var names = p.headOfHousehold.name.split(',')
+            var names = p.householdPhotoName.split(',')
+              , last = names.shift().trim()
+              , name = names.join(', ').trim() + ' ' + last
+                // TODO gender
+                //, "imageData": h.imageData // added by download
+              , card = { _id: p._id, name: name, thumbnail: null, imageData: p.imageData, householdId: p.householdId }
+              ;
+
+            return card;
+          });
+          App.cards = cards;
+          cb(cards);
+        });
+      }
+
+      function getWardMembers(doc) {
+        /*globals emit:true*/
+        if (doc.headOfHouseHold) {
+          emit(null, doc);
+        }
+      }
+
+      fc.init({
+          "shuffle":  gimmeSomeCards
+      });
+    }
   }
 
   if (!/\blds.org\b/.test(location.host)) {
     initWardMenuNative();
     return;
   } else {
-    initLdsOrg();
+    LdsOrg.test(function (loggedIn) {
+      if (loggedIn) {
+        initLdsOrg();
+      } else {
+        // TODO open new window to login, poll, then close the window
+        window.alert('Please log into LDS.org and this click on the bookmarklet again.');
+        window.location = 'https://www.lds.org/directory/';
+      }
+    });
   }
 
   if (false) {

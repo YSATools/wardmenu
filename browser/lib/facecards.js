@@ -1,5 +1,3 @@
-/*jshint strict:true jquery:true browser:true node:true es5:true scripturl:true eqeqeq:true immed:true
-onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 /*
  * BROWSER
  */
@@ -14,14 +12,25 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     //, forEachAsync = require('forEachAsync')
     //, serializeForm = require('serialize-form')
     , searchTimeout = null
-    , ajasMutex = false
+    , ajajMutex = false
     , searchWaiting = false
     , prevVal = ''
     , searchTpl
-    , cards = []
+    , cardStats = {}
+    , passingCards = {}
+      /*
+        failCount: 14
+        passCount: 16
+      */
+    , failingCards = {}
+      /*
+        failCount: 0
+        passCount: 0
+      */
     , currentCard
     , DeckP
     , cache
+    , getShuffledDeck
     ;
 
   function Deck(cards) {
@@ -99,7 +108,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     prevVal = input;
     clearTimeout(searchTimeout);
     searchDeckCache(doRender);
-    if (ajasMutex) {
+    if (ajajMutex) {
       searchWaiting = true;
       return;
     }
@@ -129,6 +138,7 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     searchDeckCache(doRender);
   }
 
+  /*
   function unusedShowHint() {
     // TODO use data attribute
     var hintLen = $('#js-card-container .js-name-hints').text().length
@@ -140,9 +150,16 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
       return;
     }
   }
+  */
   function takePunishment() {
-    currentCard.badCount = currentCard.badCount || 0;
-    currentCard.badCount += 1;
+    var key = currentCard._id
+      , stat
+      ;
+
+    stat = cardStats[key] = cardStats[key] || { key: key, failCount: 0, passCount: 0, badCount: 0 };
+    failingCards[key] = stat;
+    passingCards[key] = null;
+    stat.badCount += 1;
   }
   function showHint() {
     var hint = $('.js-name-hints').text()
@@ -193,15 +210,15 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
     return img;
   }
 
+  function youWin() {
+    global.alert('all done');
+    sizeImage('/images/gold.jpg');
+  }
+
   function loadCard(card) {
     var img
       ;
 
-    // TODO reload with most-guesses-required first
-    if (!card) {
-      global.alert('all done');
-      sizeImage('/images/gold.jpg');
-    }
     $('#js-search-input').val('');
     $('#js-card-container .js-name-hints').text('');
     $('#js-card-container .js-name').text(card.name);
@@ -225,17 +242,47 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
   }
 
   function nextCard() {
+    var stat
+      , key
+      ;
+
     if (currentCard) {
-      if (currentCard.badCount) {
-        // TODO put the bad answer closer to the top of the deck
-        cards.splice(cards.length - 1, 0, currentCard);
-        currentCard.badCount = 0;
+      key = currentCard._id;
+      stat = cardStats[key] = cardStats[key] || { key: key, failCount: 0, passCount: 0, badCount: 0 };
+      if (stat.badCount) {
+        stat.failCount += 1;
+        stat.badCount = 0;
+      }
+      stat.passCount += 1;
+      if (stat.passCount > stat.failCount) {
+        failingCards[key] = null;
+        passingCards[key] = stat;
       }
     }
 
-    // 
-    currentCard = cards.pop();
-    loadCard(currentCard);
+    getShuffledDeck(function (fullCards) {
+      var needAnother = true
+        , fullCard
+        , alreadyPassed = Object.keys(passingCards)
+        ;
+
+      // don't let currentCard be the very next card
+      while (needAnother) {
+        fullCard = fullCards.pop();
+        if (!fullCard) {
+          // TODO reload with most-guesses-required first
+          youWin();
+          return;
+        }
+        // Find a card that hasn't already passed
+        if (-1 === alreadyPassed.indexOf(fullCard._id)) {
+          needAnother = false;
+        }
+      }
+
+      currentCard = fullCard;
+      loadCard(currentCard);
+    });
   }
 
   function guessAndCheck(guess) {
@@ -319,27 +366,28 @@ onevar:true laxcomma:true laxbreak:true unused:true undef:true latedef:true*/
 
   function Facecards() {
   }
-  Facecards.prototype.init = function (_cards) {
+  Facecards.prototype.init = function (handlers) {
+    getShuffledDeck = handlers.shuffle;
     domReady(function () {
-      cards = _cards;
+      getShuffledDeck(function (cards) {
+        cache = JSON.parse(JSON.stringify(cards));
+        cache.sort(function (a, b) {
+          return a.name > b.name;
+        });
 
-      cache = JSON.parse(JSON.stringify(cards));
-      cache.sort(function (a, b) {
-        return a.name > b.name;
+        cards = JSON.parse(JSON.stringify(cards));
+        cards = cards.sort(function () {
+          return (Math.round(Math.random()) - 0.5);
+        }).filter(function (c) {
+          if (c.imageData || c.thumbnail) {
+            return true;
+          }
+        });
+
+        init();
+        nextCard();
+        searchAgain();
       });
-
-      cards = JSON.parse(JSON.stringify(cards));
-      cards = cards.sort(function () {
-        return (Math.round(Math.random()) - 0.5);
-      }).filter(function (c) {
-        if (c.imageData || c.thumbnail) {
-          return true;
-        }
-      });
-
-      init();
-      nextCard();
-      searchAgain();
     });
   };
 
