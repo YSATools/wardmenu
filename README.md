@@ -81,6 +81,8 @@ The `current-user-units` will be a collection of wards and / or branches of the 
 Ward
 ===
 
+All wards are listed as the stake
+
     GET /directory/services/ludrs/unit/current-user-ward-stake/
 
     {
@@ -100,6 +102,8 @@ Ward
         "wardName": "Provo YSA 147th Ward",
         "wardUnitNo": 222222
     }
+
+Individual wards contain the list of members
 
     GET /directory/services/ludrs/mem/member-list/:ward_unit_no
 
@@ -140,6 +144,8 @@ The photos are already available in the household resource.
 
   * headOfHousehold.photoUrl
   * householdInfo.photoUrl
+
+The phone number can be accessed like so
 
     GET /directory/services/ludrs/mem/wardDirectory/photos/:ward_unit_no
 
@@ -245,8 +251,8 @@ The only individual data is about the current user.
 
     GET /directory/services/ludrs/page/userLocale/
 
-Photo
-===
+Photo Upload
+---
 
 The flash uploader tool does some image manipulation on the file you upload
 and actually produces 3 separate files which are uploaded to the server.
