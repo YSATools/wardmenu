@@ -4,11 +4,15 @@
 (function () {
   "use strict";
 
+  // override ender madness
+  window.$ = window.jQuery;
+
   var App = module.exports
     , $ = require('jQuery')
     , domReady = $
     //, _ = require('underscore')
     , location = require('location')
+    , forEachAsync = require('./lib/forEachAsync')
     , LdsOrg = require('./lib/ldsorg')
     , Facecards = require('./lib/facecards')
     , request = require('ahr2')
@@ -51,12 +55,14 @@
     });
   }
 
+  /*
   function resetCounter(num) {
     if ('number' !== typeof num) {
       num = 0;
     }
     $('.js-member-counter').text(String(num));
   }
+  */
   function updateCounter(num) {
     if ('number' !== typeof num) {
       num = 1;
@@ -77,8 +83,15 @@
 
     function startGettin() {
       ldsOrg.getCurrentWardProfiles(function (profiles) {
-        console.log('I can haz all the ward member profilez!');
         App.fullMemberList = profiles;
+        forEachAsync(profiles, function (next, profile) {
+          ldsOrg.getHousehold(function () {
+            updateCounter();
+            next();
+          }, profile.householdId);
+        }).then(function () {
+          console.log('got all profiles');
+        });
       });
     }
 
@@ -102,7 +115,7 @@
           doStuff();
           fcHasRun = true;
           $('#js-facecards-container').show();
-          $('#js-wm-loading').hide();
+          //$('#js-wm-loading').hide();
         }
     });
 
@@ -110,36 +123,67 @@
     fc = Facecards.create();
     function doStuff() {
       function gimmeSomeCards(cb) {
-        ldsOrg.store.query(getWardMembers, { reduce: false }, function (err, profiles) {
+        function formatAndForward(err, data) {
           var cards
+            , profiles = data && data.rows
             ;
-          //response.sort(randomize);
-          cards = shuffle(profiles).map(function (p) {
-            //var names = p.headOfHousehold.name.split(',')
-            var names = p.householdPhotoName.split(',')
+
+          console.log('[doStuff]', profiles);
+          function mapProfileToCard(p) {
+            p = p.value;
+
+            var names = p.headOfHousehold.name.split(',') //householdPhotoName.split(',')
               , last = names.shift().trim()
               , name = names.join(', ').trim() + ' ' + last
                 // TODO gender
                 //, "imageData": h.imageData // added by download
-              , card = { _id: p._id, name: name, thumbnail: null, imageData: p.imageData, householdId: p.householdId }
+              , card = { _id: p._id, name: name }
               ;
 
             return card;
-          });
+          }
+
+          cards = shuffle(profiles).map(mapProfileToCard);
           App.cards = cards;
           cb(cards);
-        });
+        }
+        ldsOrg.store.query(getWardMembers, { reduce: false }, formatAndForward);
       }
 
       function getWardMembers(doc) {
         /*globals emit:true*/
-        if (doc.headOfHouseHold) {
+        if (doc.headOfHousehold) {
           emit(null, doc);
         }
       }
 
+      // use ward list rather than deck
+      function gimmeSearchResults(cb) {
+        function reformatAndForward(profiles) {
+          console.log('[getCurrentWardProfiles.results]', profiles);
+          var miniCards
+            ;
+
+          function memberListToMiniCard(p) {
+            var names = p.householdPhotoName.split(',')
+              , last = names.shift().trim()
+              , name = names.join(', ').trim() + ' ' + last
+              , card = { _id: p._id, name: name, thumbnail: null, imageData: p.imageData, householdId: p.householdId }
+              ;
+
+            return card;
+          }
+
+          miniCards = profiles.map(memberListToMiniCard);
+          cb(miniCards);
+        }
+
+        ldsOrg.getCurrentWardProfiles(reformatAndForward);
+      }
+
       fc.init({
           "shuffle":  gimmeSomeCards
+        , "search": gimmeSearchResults
       });
     }
   }

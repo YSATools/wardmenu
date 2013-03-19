@@ -29,8 +29,8 @@
       */
     , currentCard
     , DeckP
-    , cache
     , getShuffledDeck
+    , getSuggestionsBySearch
     ;
 
   function Deck(cards) {
@@ -85,14 +85,15 @@
       return;
     }
 
-    result = cache.filter(function (item) {
-      return new RegExp(input, 'i').test(item.name);
-    }).sort(function (a, b) {
-      return getValue(b.name) - getValue(a.name);
-    });
+    getSuggestionsBySearch(function (miniCards) {
+      result = miniCards.filter(function (item) {
+        return new RegExp(input, 'i').test(item.name);
+      }).sort(function (a, b) {
+        return getValue(b.name) - getValue(a.name);
+      });
 
-    cb(result);
-    console.log('search results:', result);
+      cb(result);
+    });
   }
 
   function searchAgainNow() {
@@ -368,21 +369,17 @@
   }
   Facecards.prototype.init = function (handlers) {
     getShuffledDeck = handlers.shuffle;
+    getSuggestionsBySearch = handlers.search;
+
     domReady(function () {
       getShuffledDeck(function (cards) {
-        cache = JSON.parse(JSON.stringify(cards));
-        cache.sort(function (a, b) {
-          return a.name > b.name;
-        });
-
-        cards = JSON.parse(JSON.stringify(cards));
-        cards = cards.sort(function () {
-          return (Math.round(Math.random()) - 0.5);
-        }).filter(function (c) {
+        cards = cards.filter(function (c) {
           if (c.imageData || c.thumbnail) {
             return true;
           }
         });
+
+        console.log('[FC] init', cards);
 
         init();
         nextCard();
