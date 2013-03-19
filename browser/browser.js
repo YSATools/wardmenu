@@ -74,6 +74,7 @@
   }
 
   function initLdsOrg() {
+    console.log('initLdsOrg');
     var ldsOrg
       , fcHasRun = false
       , count = 0
@@ -88,7 +89,7 @@
           ldsOrg.getHousehold(function () {
             updateCounter();
             next();
-          }, profile.householdId);
+          }, profile);
         }).then(function () {
           console.log('got all profiles');
         });
@@ -112,7 +113,7 @@
             return;
           }
 
-          doStuff();
+          getDataAndCreateCards();
           fcHasRun = true;
           $('#js-facecards-container').show();
           //$('#js-wm-loading').hide();
@@ -121,14 +122,14 @@
 
 
     fc = Facecards.create();
-    function doStuff() {
+    function getDataAndCreateCards() {
       function gimmeSomeCards(cb) {
         function formatAndForward(err, data) {
           var cards
             , profiles = data && data.rows
             ;
 
-          console.log('[doStuff]', profiles);
+          console.log('[getDataAndCreateCards]', profiles);
           function mapProfileToCard(p) {
             p = p.value;
 
@@ -137,7 +138,7 @@
               , name = names.join(', ').trim() + ' ' + last
                 // TODO gender
                 //, "imageData": h.imageData // added by download
-              , card = { _id: p._id, name: name }
+              , card = { _id: p._id, name: name, thumbnail: null, imageData: p.imageData, householdId: p.householdId }
               ;
 
             return card;

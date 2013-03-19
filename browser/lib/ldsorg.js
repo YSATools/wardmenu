@@ -60,11 +60,8 @@
     me._listeners = fns || {};
 
     $.get('http://thewardmenu.com/pouchdb-nightly.js', function (jsText) {
-      console.log('good stuff');
       // some crazy illegal token hack
       $(['<sc', 'ript>'].join('') + jsText + '</' + 'script' + '>').appendTo('body');
-      console.log('still good stuff');
-
       var createPouch = require('Pouch');
       createPouch('wardmenu-ludrs', function (err, db) {
         me.store = db;
@@ -73,13 +70,14 @@
     }, 'text');
   };
 
-  ldsDirP.getHousehold = function (fn, id) {
+  ldsDirP.getHousehold = function (fn, profileOrId) {
     var me = this
+      , jointProfile = profileOrId.householdId && profileOrId || {}
+      , id = profileOrId.householdId || profileOrId
       , profileId = 'profile-' + id
-      , profile
       ;
 
-    function onResult() {
+    function onResult(profile) {
       if (me._listeners.profile) {
         me._listeners.profile(profile);
       }
@@ -88,30 +86,50 @@
     }
 
     me.store.get(profileId, function (err, profile) {
-      if (profile) {
+      var photoUrl
+        ;
+
+      if (profile && profile.imageData) {
         onResult(profile);
         return;
       }
 
-      me._ludrsHousehold = me._ludrsBase + '/mem/householdProfile/';
       $.getJSON(me._ludrsHousehold + id, function (_profile) {
-        function saveProfile(err, imageDataUrl) {
-          _profile._id = profileId;
-          if (profile) {
-            _profile._rev = profile._rev;
-          }
-          profile = _profile;
-          profile.imageData = imageDataUrl;
-          me.store.put(profile);
+        function orThat(key) {
+          jointProfile[key] = jointProfile[key] || _profile[key];
+        }
+
+        orThat('canViewMapLink');
+        orThat('hasEditRights');
+        orThat('headOfHousehold');
+        orThat('householdInfo');
+        orThat('id');
+        orThat('imageData');
+        orThat('inWard');
+        orThat('isEuMember');
+        orThat('otherHouseholdMembers');
+        orThat('spouse');
+        orThat('ward');
+
+        function saveProfile(err, dataUrl) {
+          jointProfile._id = profileId;
+          jointProfile._rev = jointProfile._rev;
+          jointProfile.imageData = dataUrl;
+          me.store.put(jointProfile);
           onResult();
         }
 
-        getImageData(saveProfile, _profile.photoUrl);
+        photoUrl = jointProfile.headOfHousehold.photoUrl || jointProfile.householdInfo.photoUrl || jointProfile.photoUrl;
+        if (photoUrl) {
+          getImageData(saveProfile, photoUrl);
+        } else {
+          saveProfile('no photourl', null);
+        }
       });
     });
   };
 
-  ldsDirP.getHouseholds = function (fn, profileIds) {
+  ldsDirP.getHouseholds = function (fn, profilesOrIds) {
     var me = this
       , membersInfo = []
       ;
@@ -123,8 +141,8 @@
       }, memberId);
     }
 
-    profileIds = shuffle(profileIds);
-    forEachAsync(profileIds, gotOneHousehold).then(function () {
+    profilesOrIds = shuffle(profilesOrIds);
+    forEachAsync(profilesOrIds, gotOneHousehold).then(function () {
       fn(membersInfo);
     });
   };
@@ -146,6 +164,7 @@
 
     me.store.get(memberListId, function (err, fullMemberList) {
       if (fullMemberList) {
+        console.log('memberList', fullMemberList);
         onWardResult(fullMemberList.memberList);
         return;
       }
@@ -312,6 +331,7 @@
     ldsDir._ludrsBase = 'https://www.lds.org/directory/services/ludrs';
     ldsDir._ludrsStake = ldsDir._ludrsBase + '/unit/current-user-ward-stake/';
     ldsDir._ludrsWards = ldsDir._ludrsBase + '/unit/current-user-units/';
+    ldsDir._ludrsHousehold = ldsDir._ludrsBase + '/mem/householdProfile/';
     // TODO needs to be in an init function
     return ldsDir;
   };
