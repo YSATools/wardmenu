@@ -70,7 +70,7 @@
     $('.js-member-counter').text(num + (Number($('.js-member-counter').text()) || 0));
   }
   function updateMemberTotal(memberList) {
-    $('.js-member-total').text(memberList.length + (Number($('.js-member-total').text()) || 0));
+    $('.js-member-total').text(memberList.length || 0);
   }
 
   function initLdsOrg() {
@@ -78,7 +78,7 @@
     var ldsOrg
       , fcHasRun = false
       , count = 0
-      , minCount = 5
+      , minCount = 3
       , fc
       ;
 
@@ -95,10 +95,6 @@
         });
       });
     }
-
-    domReady(function () {
-      $('#js-facecards-container').hide();
-    });
 
     ldsOrg = LdsOrg.create();
     ldsOrg.init(startGettin, {
@@ -129,7 +125,6 @@
             , profiles = data && data.rows
             ;
 
-          console.log('[getDataAndCreateCards]', profiles);
           function mapProfileToCard(p) {
             p = p.value;
 
@@ -144,7 +139,13 @@
             return card;
           }
 
-          cards = shuffle(profiles).map(mapProfileToCard);
+          function hasImageData(c) {
+            if (c.imageData || c.thumbnail) {
+              return true;
+            }
+          }
+
+          cards = shuffle(profiles).map(mapProfileToCard).filter(hasImageData);
           App.cards = cards;
           cb(cards);
         }
@@ -191,17 +192,11 @@
 
   if (!/\blds.org\b/.test(location.host)) {
     initWardMenuNative();
-    return;
   } else {
-    LdsOrg.test(function (loggedIn) {
-      if (loggedIn) {
-        initLdsOrg();
-      } else {
-        // TODO open new window to login, poll, then close the window
-        window.alert('Please log into LDS.org and this click on the bookmarklet again.');
-        window.location = 'https://www.lds.org/directory/';
-      }
-    });
+    $('body').children().addClass('js-ldsorg-original-content');
+    $('#js-wm-root').removeClass('js-ldsorg-original-content');
+    $('.js-ldsorg-original-content').fadeOut();
+    LdsOrg.signin(initLdsOrg);
   }
 
   if (false) {

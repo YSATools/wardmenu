@@ -41,6 +41,12 @@
   }
   ldsDirP = LdsDir.prototype;
 
+  ldsDirP._ludrsBase = 'https://www.lds.org/directory/services/ludrs';
+  ldsDirP._ludrsStake = ldsDirP._ludrsBase + '/unit/current-user-ward-stake/';
+  ldsDirP._ludrsWards = ldsDirP._ludrsBase + '/unit/current-user-units/';
+  ldsDirP._ludrsHousehold = ldsDirP._ludrsBase + '/mem/householdProfile/';
+  ldsDirP._ludrsUserId = ldsDirP._ludrsBase + '/mem/current-user-id/';
+
   ldsDirP.init = function (cb, fns) {
     var me = this
       ;
@@ -310,28 +316,67 @@
     });
   };
 
-  LdsDir.test = ldsDirP.test = function (fn) {
+  LdsDir.signin = ldsDirP.signin = function (cb) {
     var me = this
+      , signinWin
+      //, url = "https://signin.lds.org/SSOSignIn/"
+      , url = 'https://www.lds.org/directory/'
+      , name = "WardMenuLdsOrgSignin"
+      , opts = 'height=600,width=500,location=no,menubar=no,resizable=no,scrollbars=no,status=no,toolbar=no'
       ;
 
-    $.ajax(me._ludrsWards, {
-        success: function () {
-          fn(true);
-        }
-      , error: function () {
-          fn(false);
-        }
-    });
+    function closeSigninWin() {
+      if (!signinWin) {
+        return;
+      }
+
+      try {
+        signinWin.close();
+      } catch(e) {
+        // do nothing
+        console.warn('Tried to close a closed window (the signin window, to be precise).');
+      }
+    }
+
+    function openAuthWin(ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      closeSigninWin();
+      signinWin = window.open(url, name, opts, false);
+      setTimeout(getLoginStatus, 4000);
+    }
+
+    function getLoginStatus() {
+      $.ajax({
+          //url: me._ludrsUserId
+          url: 'https://www.lds.org/directory/'
+        , success: function () {
+            $('.js-login').hide();
+            $('body').off('click', '.js-signin-link', openAuthWin);
+            closeSigninWin();
+            console.log('finally authenticated');
+            cb(true);
+          }
+        , error: function () {
+            console.log('waiting for authentication...');
+            if (!signinWin) {
+              $('.js-login').show();
+              $('body').on('click', '.js-signin-link', openAuthWin);
+            } else {
+              setTimeout(getLoginStatus, 1000);
+            }
+          }
+      });
+    }
+
+    getLoginStatus();
   };
 
   LdsDir.create = function () {
     var ldsDir = Object.create(LdsDir.prototype)
       ;
 
-    ldsDir._ludrsBase = 'https://www.lds.org/directory/services/ludrs';
-    ldsDir._ludrsStake = ldsDir._ludrsBase + '/unit/current-user-ward-stake/';
-    ldsDir._ludrsWards = ldsDir._ludrsBase + '/unit/current-user-units/';
-    ldsDir._ludrsHousehold = ldsDir._ludrsBase + '/mem/householdProfile/';
     // TODO needs to be in an init function
     return ldsDir;
   };

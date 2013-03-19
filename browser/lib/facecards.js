@@ -373,12 +373,6 @@
 
     domReady(function () {
       getShuffledDeck(function (cards) {
-        cards = cards.filter(function (c) {
-          if (c.imageData || c.thumbnail) {
-            return true;
-          }
-        });
-
         console.log('[FC] init', cards);
 
         init();
