@@ -29,6 +29,16 @@ Therefore let us learn from the children of this world and so be wise.
   * update member profile
   * encourage seeking inspiration when choosing callings
 
+D&C - Study it out in your mind (not that the data should be the focus,
+but you do need data for that part).
+
+next up
+---
+
+* Change profile pic, phone number, preferred name, etc from a single form
+* Code Cleanup
+* standardize on a single view (instead of all of member, photo, household, individual)
+
 LDS.org Directory
 ===
 
