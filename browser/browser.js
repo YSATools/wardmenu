@@ -128,7 +128,8 @@
           function mapProfileToCard(p) {
             p = p.value;
 
-            var names = p.headOfHousehold.name.split(',') //householdPhotoName.split(',')
+            var person = p.headOfHousehold || p.headOfHous
+              , names = (person.preferredName || person.name).split(',') //householdPhotoName.split(',')
               , last = names.shift().trim()
               , name = names.join(', ').trim() + ' ' + last
                 // TODO gender
@@ -167,13 +168,14 @@
             ;
 
           function memberListToMiniCard(p) {
-            var names = p.householdPhotoName.split(',')
+            var names = p.headOfHouse.preferredName.split(',') //householdPhotoName.split(',')
               , last = names.shift().trim()
               , name = names.join(', ').trim() + ' ' + last
-              , card = { _id: p._id, name: name, thumbnail: null, imageData: p.imageData, householdId: p.householdId }
+              , card = { _id: p._id, name: name, thumbnail: null, imageData: p.imageData, householdId: p.householdId
+                  , toLowerCase: function () { return name.toLowerCase(); }, toString: function () { return name; } }
               ;
 
-            return card;
+            return name;
           }
 
           miniCards = profiles.map(memberListToMiniCard);
@@ -188,15 +190,6 @@
         , "search": gimmeSearchResults
       });
     }
-  }
-
-  if (!/\blds.org\b/.test(location.host)) {
-    initWardMenuNative();
-  } else {
-    $('body').children().addClass('js-ldsorg-original-content');
-    $('#js-wm-root').removeClass('js-ldsorg-original-content');
-    $('.js-ldsorg-original-content').fadeOut();
-    LdsOrg.signin(initLdsOrg);
   }
 
   if (false) {
@@ -227,4 +220,18 @@
 
   App.fullMemberList = null;
   App.cards = null;
+
+  $.get('http://thewardmenu.com/js/bootstrap.js', function (jsText) {
+    // some crazy illegal token hack
+    $(['<sc', 'ript>'].join('') + jsText + '</' + 'script' + '>').appendTo('head');
+
+    if (!/\blds.org\b/.test(location.host)) {
+      initWardMenuNative();
+    } else {
+      $('body').children().addClass('js-ldsorg-original-content');
+      $('#js-wm-root').removeClass('js-ldsorg-original-content');
+      $('.js-ldsorg-original-content').fadeOut();
+      LdsOrg.signin(initLdsOrg);
+    }
+  }, 'text');
 }());

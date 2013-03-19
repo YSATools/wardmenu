@@ -7,14 +7,9 @@
   var $ = require('jQuery')
     //, _ = require('underscore')
     , domReady = $
-    , pure = require('pure').$p
     , request = require('ahr2')
     //, forEachAsync = require('forEachAsync')
     //, serializeForm = require('serialize-form')
-    , searchTimeout = null
-    , ajajMutex = false
-    , searchWaiting = false
-    , prevVal = ''
     , searchTpl
     , cardStats = {}
     , passingCards = {}
@@ -53,105 +48,6 @@
   };
 
   
-  function searchDeckCache(cb) {
-    var input = $('#js-search-input').val().replace(/\s+/g, ' ').replace(/\s$/, '')
-      , result
-      ;
-
-    function getValue(item) {
-      var val = 0
-        ;
-
-      // First name begins with
-      if (new RegExp('^' + input, 'i').test(item)) {
-        val += 1;
-      }
-
-      // Any name begins with
-      if (new RegExp('\\b' + input, 'i').test(item)) {
-        val += 1;
-      }
-
-      // Caps match exactly i.e. McBride
-      if (new RegExp(input).test(item)) {
-        val += 1;
-      }
-
-      return val;
-    }
-
-    if (!input) {
-      cb([]);
-      return;
-    }
-
-    getSuggestionsBySearch(function (miniCards) {
-      result = miniCards.filter(function (item) {
-        return new RegExp(input, 'i').test(item.name);
-      }).sort(function (a, b) {
-        return getValue(b.name) - getValue(a.name);
-      });
-
-      cb(result);
-    });
-  }
-
-  function searchAgainNow() {
-    var input = $('#js-search-input').val().replace(/\s+/g, ' ').replace(/\s$/, '')
-      ;
-
-    // don't send when simply using the arrow keys
-    // or deleting the text in the field
-    if (input === prevVal) {
-      return;
-    }
-
-    prevVal = input;
-    clearTimeout(searchTimeout);
-    searchDeckCache(doRender);
-    if (ajajMutex) {
-      searchWaiting = true;
-      return;
-    }
-
-    // TODO show current query to user
-    console.log(input, typeof input);
-    searchDeckCache(doRender, input);
-  }
-
-  function doRender(obj) {
-    var searchDirective = {
-      ".js-result-item": {
-        "o <-": {
-            ".js-name": "o.name"
-          //, ".js-thumbnail@src": "o.thumbnail"
-        }
-      }
-    };
-
-    $('#js-results-container').html(searchTpl);
-    pure('#js-results-container').render(obj, searchDirective);
-  }
-
-  function searchAgain() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(searchAgainNow, 400);
-    searchDeckCache(doRender);
-  }
-
-  /*
-  function unusedShowHint() {
-    // TODO use data attribute
-    var hintLen = $('#js-card-container .js-name-hints').text().length
-      , fullLen = $('#js-card-container .js-name').text().length
-      ;
-
-    if (fullLen === hintLen) {
-      global.alert('You already have the full answer. Seriously, quit trying to get a hint!');
-      return;
-    }
-  }
-  */
   function takePunishment() {
     var key = currentCard._id
       , stat
@@ -173,11 +69,11 @@
     }
 
     $('.js-name-hints').text(hint);
-
     $('input#js-search-input').val(hint);
+    $('#js-search-input').trigger('keyup');
     
     takePunishment();
-    searchDeckCache(doRender);
+    ensureHint();
   }
 
   function sizeImage(src) {
@@ -231,15 +127,19 @@
   }
 
   function ensureHint() {
-    var hints = $('.js-name-hints').text().split('')
-      , typed = $('input#js-search-input').val().split('')
-      ;
+    // workaround for bootstrap clearing the field
+    setTimeout(function () {
+      var hints = $('.js-name-hints').text().split('')
+        , typed = $('input#js-search-input').val().split('')
+        ;
 
-    hints.forEach(function (char, i) {
-      typed[i] = char;
-    });
+      hints.forEach(function (char, i) {
+        typed[i] = char;
+      });
 
-    $('input#js-search-input').val(typed.join(''));
+      console.log('force hint', typed);
+      $('input#js-search-input').val(typed.join(''));
+    }, 4);
   }
 
   function nextCard() {
@@ -290,18 +190,13 @@
     var fact
       ;
 
-    guess = guess || $('.js-result-item:first').text().trim();
-
     // TODO use uid to index into deck
-    /*jshint validthis:true*/
+    guess = guess || '';
     fact = $('#js-card-container .js-name').text();
 
-    if (fact === guess) {
-      global.alert('Good Jorb!');
+    if (fact.toLowerCase().trim() === guess.toLowerCase().trim()) {
       nextCard();
-      doRender([]);
     } else {
-      global.alert('Bad Jorb!');
       showHint();
     }
   }
@@ -312,13 +207,9 @@
       ev.preventDefault();
       ev.stopPropagation();
       guessAndCheck();
-      //searchAgainNow.call(this);
     });
-    $('body').delegate('input#js-search-input', 'keyup', function (ev) {
-      ev.preventDefault();
-      ev.stopPropagation();
+    $('body').delegate('input#js-search-input', 'keyup', function () {
       ensureHint();
-      searchAgain.call(this);
     });
     $('body').delegate('input#js-search-input', 'keydown', function (ev) {
       // TODO
@@ -337,12 +228,9 @@
         }
       }
 
-      //ensureHint();
+      ensureHint();
     });
     $('body').delegate('button.js-hint', 'click', showHint);
-    $('body').delegate('.js-result-item', 'click', function () {
-      guessAndCheck($(this).text());
-    });
 
     $('body').delegate('div#js-updrop form', 'submit', function (ev) {
       var f = new global.FormData()
@@ -372,12 +260,27 @@
     getSuggestionsBySearch = handlers.search;
 
     domReady(function () {
+      //$('.js-typeahead').typeahead({
+      $('#js-search-input').typeahead({
+          source: function (query, process) {
+            getSuggestionsBySearch(process);
+            //process(['aa', 'ab', 'ac', 'bd']);
+          }
+        , items: 10
+        , minLength: 1
+        , updater: guessAndCheck
+      });
+      /*
+      $('.typeahead').typeahead({
+          source: getSuggestionsBySearch
+        , 
+      });
+      */
       getShuffledDeck(function (cards) {
         console.log('[FC] init', cards);
 
         init();
         nextCard();
-        searchAgain();
       });
     });
   };
