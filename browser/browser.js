@@ -223,15 +223,32 @@
 
   $.get('http://thewardmenu.com/js/bootstrap.js', function (jsText) {
     // some crazy illegal token hack
-    $(['<sc', 'ript>'].join('') + jsText + '</' + 'script' + '>').appendTo('head');
-
     if (!/\blds.org\b/.test(location.host)) {
       initWardMenuNative();
-    } else {
-      $('body').children().addClass('js-ldsorg-original-content');
-      $('#js-wm-root').removeClass('js-ldsorg-original-content');
-      $('.js-ldsorg-original-content').fadeOut();
-      LdsOrg.signin(initLdsOrg);
+      return;
     }
+
+    $('body').children().addClass('js-ldsorg-original-content');
+    $('#js-wm-root').removeClass('js-ldsorg-original-content');
+    $('.js-ldsorg-original-content').fadeOut(function () {
+      $('.js-ldsorg-original-content').remove();
+
+      $('link[rel="STYLEsheet"]').each(function (i, stylesheet) {
+        stylesheet.disabled = "disabled";
+      });
+      $('style').each(function (i, el) {
+        var $el = $(el)
+          ;
+
+        if (!/wardmenu-widget/.test($el.html())) {
+          $el.html("");
+          $el.remove();
+        }
+      });
+
+      $(['<sc', 'ript>'].join('') + jsText + '</' + 'script' + '>').appendTo('head');
+    });
+
+    LdsOrg.signin(initLdsOrg);
   }, 'text');
 }());
