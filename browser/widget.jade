@@ -2,31 +2,57 @@
   .css-wm-mask
   .css-wm-no-mask
       include login
-      #js-wm-loading.css-wm-loading.css-top-layer
-        //-progress.js-member-progress
-        span Loading... 
-        span.js-member-counter 0
-        span /
-        span.js-member-total 0
-      #js-facecards-container.css-facecards-container.css-top-layer(style="display: none;")
-        .css-query-container
-          h1.
-            What is this person's name?
-          #js-card-container.css-card-container
-            .js-thumbnail.css-fc-poloroid
-              img(align="absmiddle", src="images/nophoto_medium.gif")
-              div.css-fc-hintname &nbsp;
-            span.js-name(style="display: none;") First Last
-            span.js-name-hints(style="display: none;") First Last
+      #js-wm-profile
+      #js-wm-stake
+        .css-headbar-container
+          .css-headbar
+            .css-search-icon.css-search
+              img(src="http://thewardmenu.com/images/wardmenu-icon.png")
+            .css-search-box.css-search
+              input(type="text", placeholder="search for something")
+            .css-right-nav
+              ul
+                li a | b | c
+                li Home
+                li Profile
+        .css-body-container
+          .css-body
+            .css-nav-left
+              .css-profile
+                h3 First Last
+              .css-stakes
+                h3 Stakes
+            .css-content
+              h3 Feeds
+              #js-facecards-container.css-facecards-container.css-top-layer(style="display: none;")
+                .css-query-container
+                  h1.
+                    What is this person's name?
+                  #js-card-container.css-card-container
+                    .js-thumbnail.css-fc-poloroid
+                      img(align="absmiddle", src="images/nophoto_medium.gif")
+                      div.css-fc-hintname &nbsp;
+                    span.js-name(style="display: none;") First Last
+                    span.js-name-hints(style="display: none;") First Last
 
-          form#js-search
-            input#js-search-input(data-provide="typeahead", type="text", placeholder="Ex: John Doe")
-            button(type='submit') Check
+                  form#js-search
+                    input#js-search-input(data-provide="typeahead", type="text", placeholder="Ex: John Doe")
+                    button(type='submit') Check
 
-        //-#js-results-container.css-results-container
-          ul#js-results.css-results
-            li.js-result-item
-              span.js-name First Last
+                //-#js-results-container.css-results-container
+                  ul#js-results.css-results
+                    li.js-result-item
+                      span.js-name First Last
+
+            .css-sidebar
+              #js-wm-loading.css-wm-loading.css-top-layer
+                //-progress.js-member-progress
+                span Loading... 
+                span.js-member-counter 0
+                span /
+                span.js-member-total 0
+
+            .css-clear
         
       .css-menunator-container
       .css-appetizer-container

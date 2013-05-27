@@ -245,6 +245,7 @@
           $el.remove();
         }
       });
+      $('body').css({ margin: 0, padding: 0 });
 
       $(['<sc', 'ript>'].join('') + jsText + '</' + 'script' + '>').appendTo('head');
     });
