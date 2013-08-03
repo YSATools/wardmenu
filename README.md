@@ -44,18 +44,35 @@ LdsOrg.js API
 
 methods
 
-  * getStakeInfo(cb) - returns a combination of '/unit/current-user-ward-stake/' and '/unit/current-user-units/'
-  * getWard(unitNo, cb) - returns a combination of '/mem/member-list/' and '/mem/wardDirectory/photos/'
+  * getStakeInfo(cb) - returns a combination of `/unit/current-user-ward-stake/` and `/unit/current-user-units/`
+  * getWard(unitNo, cb) - returns a combination of `/mem/member-list/:ward_unit_no` and `/mem/wardDirectory/photos/`
   * getWards(unitNos, cb) - returns an array of the above
   * getCurrentStakeProfiles(cb) - calls `getStakeInfo` and `getWards` to get the user's current stake directory
   * getCurrentWardProfiles(cb) - calls `getStakeInfo` and `getWard` on the user's ward
   * getHousehold(profileOrId, cb) - takes a member profile or a member id and return '/mem/householdProfile/'
   * getHouseholds(profilesOrIds, cb) - takes an array of member profiles or ids
 
+experimental methods
+
+  * signin(cb) - doesn't always work - attempts to have the user login through a popup...
+    an `iframe` with `window.postMessage` might be a better choice
+    `$('#iframe_').contents().find('body').append(script)`
+
+Other notes:
+
 I suspect that if you log in as an area authority you get more resource that would allow you to get the data
 for an entire area, but that information is beyond my privileges.
 
-database 
+### Local Cache
+
+Because LDS.org is unheavenly slow and all of the picture resources expire after about 10 minutes,
+it's convenient (if not necessary) to cache the data.
+
+[IndexedDB](https://developer.mozilla.org/en-US/docs/IndexedDB) has a storage limit of 50MiB,
+which is more than sufficient and it is also available, even on crappy browsers using the
+IndexedDB Polyfill, [IndexedDBShim](http://nparashuram.com/IndexedDBShim/).
+
+[PouchDB](http://pouchdb.com/) was chosen as the storage engine because, well, it's easy to use.
 
   * Individual Profile Data
     * '/mem/householdProfile/'
