@@ -39,7 +39,7 @@ next up
 * Code Cleanup
 * standardize on a single view (instead of all of member, photo, household, individual)
 
-API Overview
+LDS.org API Overview
 ===
 
   * [LDS.org](https://www.lds.org/)
