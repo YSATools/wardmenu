@@ -39,6 +39,20 @@ next up
 * Code Cleanup
 * standardize on a single view (instead of all of member, photo, household, individual)
 
+API Overview
+===
+
+  * [LDS.org](https://www.lds.org/)
+    * [LDS.org/church-calendar/](https://www.lds.org/church-calendar/services/lucrs/)
+      * [/mem/hasViewedDirectoryWelcomeMsg/](https://www.lds.org/church-calendar/services/lucrs/mem/hasViewedDirectoryWelcomeMsg/)
+    * [LDS.org/directory/services/ludrs](https://www.lds.org/directory/services/ludrs/)
+      * [/userLocale/](https://www.lds.org/directory/services/ludrs/page/userLocale/)
+      * [/page/str/index](https://www.lds.org/directory/services/ludrs/page/str/index)
+      * [/unit/current-user-ward-stake/](https://www.lds.org/directory/services/ludrs/unit/current-user-ward-stake/)
+      * [/unit/current-user-units/](https://www.lds.org/directory/services/ludrs/unit/current-user-units/)
+      * [/mem/current-user-id/](https://www.lds.org/directory/services/ludrs/mem/current-user-id/)
+      * [/mem/member-list/:unit_number](https://www.lds.org/directory/services/ludrs/mem/member-list/:unit_number)
+
 LDS.org Directory
 ===
 
