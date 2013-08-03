@@ -39,7 +39,30 @@ next up
 * Code Cleanup
 * standardize on a single view (instead of all of member, photo, household, individual)
 
-LDS.org API Overview
+LdsOrg.js API
+===
+
+methods
+
+  * getStakeInfo(cb) - returns a combination of '/unit/current-user-ward-stake/' and '/unit/current-user-units/'
+  * getWard(unitNo, cb) - returns a combination of '/mem/member-list/' and '/mem/wardDirectory/photos/'
+  * getWards(unitNos, cb) - returns an array of the above
+  * getCurrentStakeProfiles(cb) - calls `getStakeInfo` and `getWards` to get the user's current stake directory
+  * getCurrentWardProfiles(cb) - calls `getStakeInfo` and `getWard` on the user's ward
+  * getHousehold(profileOrId, cb) - takes a member profile or a member id and return '/mem/householdProfile/'
+  * getHouseholds(profilesOrIds, cb) - takes an array of member profiles or ids
+
+I suspect that if you log in as an area authority you get more resource that would allow you to get the data
+for an entire area, but that information is beyond my privileges.
+
+database 
+
+  * Individual Profile Data
+    * '/mem/householdProfile/'
+    * `jointProfile.headOfHousehold.photoUrl || jointProfile.householdInfo.photoUrl || jointProfile.photoUrl`
+    * stored as `'profile' + profileOrId.householdId || member.headOfHouseIndividualId`
+
+lds.org API Overview
 ===
 
   * [LDS.org](https://www.lds.org/)
