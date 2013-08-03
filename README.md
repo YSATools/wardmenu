@@ -52,7 +52,7 @@ API Overview
       * [/unit/current-user-ward-stake/](https://www.lds.org/directory/services/ludrs/unit/current-user-ward-stake/)
       * [/unit/current-user-units/](https://www.lds.org/directory/services/ludrs/unit/current-user-units/)
       * [/mem/current-user-id/](https://www.lds.org/directory/services/ludrs/mem/current-user-id/)
-      * [/mem/member-list/**:unit\_number**](https://www.lds.org/directory/services/ludrs/mem/member-list/:unit_number)
+      * [/mem/member-list/:unit_number](https://www.lds.org/directory/services/ludrs/mem/member-list/:unit_number)
 
 LDS.org Directory
 ===
