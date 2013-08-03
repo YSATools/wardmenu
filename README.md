@@ -43,9 +43,9 @@ API Overview
 ===
 
   * [LDS.org](https://www.lds.org/)
-    * [LDS.org/church-calendar/](https://www.lds.org/church-calendar/services/lucrs/)
+    * Calendar - [lds.org/church-calendar/services/lucrs/](https://www.lds.org/church-calendar/services/lucrs/)
       * [/mem/hasViewedDirectoryWelcomeMsg/](https://www.lds.org/church-calendar/services/lucrs/mem/hasViewedDirectoryWelcomeMsg/)
-    * [LDS.org/directory/services/ludrs](https://www.lds.org/directory/services/ludrs/)
+    * Directory - [lds.org/directory/services/ludrs](https://www.lds.org/directory/services/ludrs/)
       * [/util/ver/](https://www.lds.org/directory/services/ludrs/util/ver/)
       * [/userLocale/](https://www.lds.org/directory/services/ludrs/page/userLocale/)
       * [/page/str/index](https://www.lds.org/directory/services/ludrs/page/str/index)
