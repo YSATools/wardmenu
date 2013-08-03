@@ -79,20 +79,28 @@ IndexedDB Polyfill, [IndexedDBShim](http://nparashuram.com/IndexedDBShim/).
     * `jointProfile.headOfHousehold.photoUrl || jointProfile.householdInfo.photoUrl || jointProfile.photoUrl`
     * stored as `'profile' + profileOrId.householdId || member.headOfHouseIndividualId`
 
-lds.org API Overview
+lds.org API Overview & Playground
 ===
+
+Go log into [LDS.org/directory](https://www.lds.org/directory) and then start clicking on the links below to what the api looks like.
+
+I'd also recommend installing the Chrome Plugin
+[JSONView](https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc)
+for easy formatting of the data.
 
   * [LDS.org](https://www.lds.org/)
     * Calendar - [lds.org/church-calendar/services/lucrs/](https://www.lds.org/church-calendar/services/lucrs/)
       * [/mem/hasViewedDirectoryWelcomeMsg/](https://www.lds.org/church-calendar/services/lucrs/mem/hasViewedDirectoryWelcomeMsg/)
     * Directory - [lds.org/directory/services/ludrs](https://www.lds.org/directory/services/ludrs/)
-      * [/util/ver/](https://www.lds.org/directory/services/ludrs/util/ver/)
-      * [/userLocale/](https://www.lds.org/directory/services/ludrs/page/userLocale/)
-      * [/page/str/index](https://www.lds.org/directory/services/ludrs/page/str/index)
-      * [/unit/current-user-ward-stake/](https://www.lds.org/directory/services/ludrs/unit/current-user-ward-stake/)
-      * [/unit/current-user-units/](https://www.lds.org/directory/services/ludrs/unit/current-user-units/)
-      * [/mem/current-user-id/](https://www.lds.org/directory/services/ludrs/mem/current-user-id/)
-      * [/mem/member-list/:unit_number](https://www.lds.org/directory/services/ludrs/mem/member-list/:unit_number)
+      * Version - [/util/ver/](https://www.lds.org/directory/services/ludrs/util/ver/)
+      * Locale - [/userLocale/](https://www.lds.org/directory/services/ludrs/page/userLocale/)
+      * Page Translation - [/page/str/index](https://www.lds.org/directory/services/ludrs/page/str/index)
+      * Ward Metadata - [/unit/current-user-ward-stake/](https://www.lds.org/directory/services/ludrs/unit/current-user-ward-stake/)
+      * Stake Metadata - [/unit/current-user-units/](https://www.lds.org/directory/services/ludrs/unit/current-user-units/)
+      * User Id - [/mem/current-user-id/](https://www.lds.org/directory/services/ludrs/mem/current-user-id/)
+      * Ward Member List - [/mem/member-list/:unit_number](https://www.lds.org/directory/services/ludrs/mem/member-list/:unit_number)
+      * Ward Photo List - [/mem/householdProfile/:head_of_house_individual_id](https://www.lds.org/directory/services/ludrs/mem/householdProfile/:head_of_house_individual_id)
+      * Household - [/directory/services/ludrs/mem/householdProfile/:head_of_house_individual_id](https://www.lds.org/directory/services/ludrs/mem/householdProfile/:head_of_house_individual_id)
 
 LDS.org Directory
 ===
